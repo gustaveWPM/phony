@@ -2,7 +2,6 @@ import pymongo
 from config import GENERATOR_CONFIG as GEN_CONF
 from db import DB_TABLE
 
-
 DEBUG_MODE = False
 
 def retrieve_last_saved_phone_number_suffix() -> str:
@@ -14,7 +13,7 @@ def retrieve_last_saved_phone_number_suffix() -> str:
         return '0'
 
 def reject_phone_number_suffix(phone_number_suffix) -> bool:
-    head_max_zeros = 2
+    head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
     digits = "0123456789"
 
