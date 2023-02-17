@@ -4,8 +4,6 @@ from config import DB_CONFIG as DB_CONF
 
 DEBUG_MODE = False
 
-DIGITS = "0123456789"
-
 MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_ROUTE"])
 DB = MONGO_CLIENT["phone_book"]
 DB_COL = DB["france"]
@@ -21,10 +19,11 @@ def retrieve_last_saved_phone_number_suffix() -> str:
 def reject_phone_number_suffix(phone_number_suffix) -> bool:
     head_max_zeros = 2
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
+    digits = "0123456789"
 
     if (phone_number_suffix.startswith('0' * head_max_zeros)):
         return True
-    for digit in DIGITS:
+    for digit in digits:
         if (phone_number_suffix.count(digit) > same_digit_threshold):
             return True
     return False
