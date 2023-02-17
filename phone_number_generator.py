@@ -1,16 +1,13 @@
 import pymongo
 from config import GENERATOR_CONFIG as GEN_CONF
-from config import DB_CONFIG as DB_CONF
+from db import DB_TABLE
+
 
 DEBUG_MODE = False
 
-MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_ROUTE"])
-DB = MONGO_CLIENT["phone_book"]
-DB_COL = DB["france"]
-
 def retrieve_last_saved_phone_number_suffix() -> str:
     try:
-        last_saved_phone_number_entry = DB_COL.find_one(sort=[( "_id", pymongo.DESCENDING )])
+        last_saved_phone_number_entry = DB_TABLE.find_one(sort=[( "_id", pymongo.DESCENDING )])
         last_saved_phone_number = last_saved_phone_number_entry["generated_suffix"]
         return last_saved_phone_number
     except:
@@ -39,7 +36,7 @@ def save_phone_number(phone_number: str, prefix_data: dict, phone_number_suffix:
         "generated_suffix": phone_number_suffix
     }
 
-    DB_COL.insert_one(database_entry)
+    DB_TABLE.insert_one(database_entry)
     if (DEBUG_MODE):
         print(f"[DEBUG] Generated phone number: {phone_number}")
 
