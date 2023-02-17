@@ -54,6 +54,7 @@ def run_phone_numbers_generator():
     prefix = PREFIX
     ndigits = NDIGITS
     do_generate(ndigits, prefix)
+    print("Mission complete!")
 
 if __name__ == "__main__":
     run_phone_numbers_generator()
