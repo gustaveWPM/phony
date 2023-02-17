@@ -49,12 +49,12 @@ def append_heading_zeros(number, ndigits, magnitude):
     return phone_suffix
 
 def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
-    max_iter = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
+    max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
     prefix = prefix_data["COUNTRY_CODE"] + prefix_data["OPERATOR_CODE"]
     magnitude = 10 ** (ndigits - 1)
 
-    for i in range(first_iteration, max_iter):
-        current_phone_number_suffix = append_heading_zeros(i, ndigits, magnitude)
+    for current_iteration in range(first_iteration, max_iteration):
+        current_phone_number_suffix = append_heading_zeros(current_iteration, ndigits, magnitude)
         if (not reject_phone_number_suffix(current_phone_number_suffix)):
             currrent_phone_number = prefix + current_phone_number_suffix
             save_phone_number(currrent_phone_number, prefix_data, current_phone_number_suffix)
