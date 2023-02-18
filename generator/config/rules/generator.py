@@ -1,7 +1,5 @@
 # coding: utf-8
 
-import config.builders.generator as builder
-
 GENERATOR: dict = {
     "TARGET": {
         "COUNTRY": "FRANCE",
@@ -12,4 +10,7 @@ GENERATOR: dict = {
     }
 }
 
+# * ... I'll just inject all the rest of the config for you, you don't mind?
+
+import config.builders.generator as builder
 builder.append_dynamic_conf(GENERATOR)

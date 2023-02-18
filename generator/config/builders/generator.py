@@ -6,6 +6,15 @@ import obj.services.countries as countries_service
 from obj.contracts.prefix_data import PrefixData
 from config.rules.countries import COUNTRIES
 
+
+def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
+    country: str = target["COUNTRY"]
+    fine_tuning_dict: dict = COUNTRIES[country]["FINE_TUNING"]
+
+    for key in fine_tuning_dict:
+        conf[key] = fine_tuning_dict[key]
+
+
 def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     if not options["DESK"] and not options["MOBILE"]:
         raise ValueError("Invalid configuration: 'DESK' and 'MOBILE' are both setted to False.")
@@ -37,14 +46,6 @@ def _generate_prefix_data(target: dict) -> PrefixData:
 def _append_prefix_data(target: dict) -> PrefixData:
     prefix_data: PrefixData = _generate_prefix_data(target)
     return prefix_data
-
-
-def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
-    country: str = target["COUNTRY"]
-    fine_tuning_dict: dict = COUNTRIES[country]["FINE_TUNING"]
-
-    for key in fine_tuning_dict:
-        conf[key] = fine_tuning_dict[key]
 
 
 def append_dynamic_conf(conf: dict) -> Void:
