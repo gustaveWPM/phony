@@ -13,6 +13,7 @@ VERY_FIRST_ITERATION = "0"   # * ... Default value is `"0"`
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
+    same_consecutive_digit_threshold = GEN_CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
     digits = "0123456789"
 
     if (phone_number_suffix.startswith('0' * (head_max_zeros + 1))):
@@ -20,6 +21,13 @@ def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     for digit in digits:
         if (phone_number_suffix.count(digit) > same_digit_threshold):
             return True
+        if (same_consecutive_digit_threshold > 0):
+            try:
+                phone_number_suffix.index(
+                    digit * same_consecutive_digit_threshold)
+                return True
+            except:
+                pass
     return False
 
 
@@ -37,18 +45,19 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int):
     if (FORCED_MAX_ITERATION != -1 and UNSAFE):
         max_iteration = FORCED_MAX_ITERATION
     else:
-        max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(
-            GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1  # * ... lol
-    magnitude = 10 ** (ndigits - 1)
+        t = GEN_CONF["SAME_DIGIT_THRESHOLD"]
+        n = GEN_CONF["NDIGITS"]
+        max_iteration = int('9' * (t + 1) + '0' * abs(n - t)) // 10 + 1  # * ... lol
     country_code = prefix_data["COUNTRY_CODE"]
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
-
-    if (head_max_zeros == 0 and first_iteration < magnitude):
-        first_iteration = magnitude
 
     for current_operator_code in prefix_data["OPERATOR_CODES"]:
         prefix = country_code + current_operator_code
         computed_ndigits = ndigits - len(current_operator_code)
+        magnitude = 10 ** (computed_ndigits - 1)
+
+        if (head_max_zeros == 0 and first_iteration < magnitude):
+            first_iteration = magnitude
 
         for current_iteration in range(first_iteration, max_iteration):
             current_phone_number_suffix = append_heading_zeros(
@@ -98,6 +107,9 @@ def config_error_handling():
     if (GEN_CONF["HEAD_MAX_ZEROS"] < 0):
         raise ValueError(
             "Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
+    if (GEN_CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"] < 0):
+        raise ValueError(
+            "Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be a positive value, less than or equal to NDIGITS")
 
 
 def skip_generation(data) -> bool:
@@ -109,7 +121,7 @@ def skip_generation(data) -> bool:
     return True
 
 
-def appendFiniteCollectionIndicator():
+def append_finite_collection_indicator():
     save_phone_number("-1", "-1", "-1", "-1")
 
 
@@ -136,7 +148,7 @@ def run_phone_numbers_generator():
             last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
 
     do_generate(ndigits, prefix_data, first_iteration)
-    appendFiniteCollectionIndicator()
+    append_finite_collection_indicator()
     print("Mission complete!")
 
 
