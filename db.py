@@ -16,15 +16,15 @@ def _retrieve_last_saved_phone_number_entry():
     except:
         return None
 
-def _retrieve_last_saved_phone_operator_code(entry) -> str:
+def _retrieve_last_saved_phone_operator_code(entry: dict) -> str:
     data = entry["operator_code"]
     return data
 
-def _retrieve_last_saved_phone_country_code(entry) -> str:
+def _retrieve_last_saved_phone_country_code(entry: dict) -> str:
     data = entry["country_code"]
     return data
 
-def _retrieve_last_saved_phone_number_suffix(entry) -> str:
+def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
     data = entry["generated_suffix"]
     return data
 
