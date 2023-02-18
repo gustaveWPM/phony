@@ -4,6 +4,7 @@ from metaprog.aliases import Void
 from typing import List
 import obj.services.countries as countries_service
 from obj.contracts.prefix_data import PrefixData
+from config.rules.countries import COUNTRIES
 
 def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     if not options["DESK"] and not options["MOBILE"]:
@@ -33,7 +34,20 @@ def _generate_prefix_data(target: dict) -> PrefixData:
     return _do_generate_prefix_data(country, options)
 
 
+def _append_prefix_data(target: dict) -> PrefixData:
+    prefix_data: PrefixData = _generate_prefix_data(target)
+    return prefix_data
+
+
+def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
+    country: str = target["COUNTRY"]
+    fine_tuning_dict: dict = COUNTRIES[country]["FINE_TUNING"]
+
+    for key in fine_tuning_dict:
+        conf[key] = fine_tuning_dict[key]
+
+
 def append_dynamic_conf(conf: dict) -> Void:
     target: dict = conf["TARGET"]
-    conf["PREFIX_DATA"]: PrefixData = _generate_prefix_data(target)
-    return conf
+    conf["PREFIX_DATA"] = _append_prefix_data(target)
+    _append_fine_tuning_attributes(conf, target)

@@ -105,7 +105,7 @@ def _compute_first_iteration_value(metadatas: dict) -> int:
         first_iteration = 0
         return first_iteration
     if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
-        first_iteration = int(DEV.VERY_FIRST_ITERATION)
+        first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
     else:
         first_iteration = 0
     if (metadatas is None):
