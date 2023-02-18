@@ -7,7 +7,7 @@ FORCED_FIRST_ITERATION = -1 # * ... Default value is `-1`
 FORCED_MAX_ITERATION = -1 # * ... Default value is `-1`
 FORCED_OPERATOR_CODES = [] # * ... Default value is `[]`
 
-VERY_FIRST_ITERATION = "05010000" # * ... Default value is `"01010000"`
+VERY_FIRST_ITERATION = "0" # * ... Default value is `"0"`
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
