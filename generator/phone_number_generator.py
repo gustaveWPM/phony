@@ -54,7 +54,35 @@ def _compute_max_iter(ndigits: int, op_code: str) -> int:
     return max_iteration
 
 
-def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: int, op_codes: List[str]):
+def _compute_first_iter(metadatas: Optional[dict], ndigits: int, max_head_zeros: int) -> int:
+    first_iteration: int = 0
+
+    if (DEV.FORCED_FIRST_ITERATION >= 0 and DEV.UNSAFE):
+        first_iteration = DEV.FORCED_FIRST_ITERATION
+        return first_iteration
+
+    if (DEV.DISABLE_SMART_RELOAD):
+        first_iteration = 0
+        return first_iteration
+
+    if (metadatas is not None):
+        first_iteration = int(metadatas["phone_number_suffix"]) + 1
+        return first_iteration
+
+    if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
+        first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
+    else:
+        if (max_head_zeros >= ndigits):
+            return first_iteration
+        pos: int = max_head_zeros
+        str_base = '0' * ndigits
+        first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
+        first_iteration = int(first_iteration_str)
+        print(first_iteration_str)
+    return first_iteration
+
+
+def _do_generate_loop(ndigits: int, prefix_data: PrefixData, op_codes: List[str], metadatas: Optional[dict]):
     country_code: str = ''
     head_max_zeros: int = 0
     country_code = prefix_data.country_code()
@@ -65,6 +93,7 @@ def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: in
         computed_ndigits: int = ndigits - len(cur_operator_code)
         magnitude: int = 10 ** (computed_ndigits - 1)
         max_iteration: int = _compute_max_iter(ndigits, cur_operator_code)
+        first_iteration: int = _compute_first_iter(metadatas, computed_ndigits, head_max_zeros)
 
         if (head_max_zeros == 0 and first_iteration < magnitude):
             first_iteration = magnitude
@@ -76,7 +105,7 @@ def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: in
             if (not _reject_phone_number_suffix(cur_operator_code, cur_phone_number_suffix)):
                 cur_phone_number: str = prefix + cur_phone_number_suffix
                 db.save_phone_number(cur_phone_number, country_code,
-                                  cur_operator_code, cur_phone_number_suffix)
+                                     cur_operator_code, cur_phone_number_suffix)
                 if (DEV.DEBUG_MODE):
                     DebugLogger("GENERATED_PHONE_NUMBER", cur_phone_number)
 """             else:
@@ -84,7 +113,8 @@ def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: in
                 print(f"Rejected: {cur_phone_number}")
 """
 
-def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) -> Void:
+
+def _do_generate(ndigits: int, prefix_data: PrefixData, metadatas: dict) -> Void:
     op_codes_a: List[str] = []
     op_codes_b: List[str] = []
 
@@ -95,23 +125,8 @@ def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) ->
         op_codes_a = prefix_data.operator_mobile_codes()
         op_codes_b = prefix_data.operator_desk_codes()
 
-    _do_generate_loop(ndigits, prefix_data, first_iteration, op_codes_a)
-    _do_generate_loop(ndigits, prefix_data, first_iteration, op_codes_b)
-
-
-def _compute_first_iteration_value(metadatas: dict) -> int:
-    first_iteration: int = 0
-    if (DEV.DISABLE_SMART_RELOAD):
-        first_iteration = 0
-        return first_iteration
-    if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
-        first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
-    else:
-        first_iteration = 0
-    if (metadatas is None):
-        return first_iteration
-    first_iteration = int(metadatas["phone_number_suffix"]) + 1
-    return first_iteration
+    _do_generate_loop(ndigits, prefix_data, op_codes_a, metadatas)
+    _do_generate_loop(ndigits, prefix_data, op_codes_b, metadatas)
 
 
 def _slice_operator_codes(metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
@@ -140,7 +155,6 @@ def _skip_generation(data: Optional[dict]) -> bool:
 
 
 def _run_phone_numbers_generator() -> Void:
-    first_iteration: int = 0
     prefix_data: PrefixData = CONF["PREFIX_DATA"]
     ndigits: int = CONF["NDIGITS"]
     reload_metas: dict = db.retrieve_last_saved_phone_metadatas()
@@ -149,17 +163,12 @@ def _run_phone_numbers_generator() -> Void:
         print(VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
         return
 
-    if (DEV.FORCED_FIRST_ITERATION >= 0 and DEV.UNSAFE):
-        first_iteration = DEV.FORCED_FIRST_ITERATION
-    else:
-        first_iteration = _compute_first_iteration_value(reload_metas)
-
     if (DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE):
         prefix_data.force_operator_codes(DEV.FORCED_OPERATOR_CODES)
     else:
         _slice_operator_codes(reload_metas, prefix_data)
 
-    _do_generate(ndigits, prefix_data, first_iteration)
+    _do_generate(ndigits, prefix_data, reload_metas)
     db.append_finite_collection_indicator()
     print(VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])
 
