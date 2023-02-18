@@ -2,6 +2,7 @@ from config import GENERATOR_CONFIG as GEN_CONF
 from db import *
 
 DEBUG_MODE = False
+UNSAFE = False
 FORCED_FIRST_ITERATION = -1 # * ... Default value is `-1`
 FORCED_OPERATOR_CODES = [] # * ... Default value is `[]`
 
@@ -94,12 +95,12 @@ def run_phone_numbers_generator():
         print("You already have a finite phonebook.")
         return
 
-    if (FORCED_FIRST_ITERATION == -1):
+    if (FORCED_FIRST_ITERATION == -1 and UNSAFE):
         first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
     else:
         first_iteration = FORCED_FIRST_ITERATION
 
-    if (FORCED_OPERATOR_CODES):
+    if (FORCED_OPERATOR_CODES and UNSAFE):
         prefix_data["OPERATOR_CODES"] = FORCED_OPERATOR_CODES
     else:
         prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
