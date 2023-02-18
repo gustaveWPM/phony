@@ -7,6 +7,7 @@ COUNTRIES: dict = {
             "MOBILE": ["6", "7"],
             "DESK": ["1", "2", "3", "4", "5"]
         },
+
         "FINE_TUNING": {
             # * ... Number of digits in the complete phone suffix, operator code included
             "NDIGITS": 9,

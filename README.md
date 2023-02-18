@@ -1,4 +1,4 @@
-# Phone numbers pool generator
+# Phone numbers pools generator
 
 Just a side project made for the fun.  
 **CAUTION: I am neither a telephony nor a Python pro** (this is my first Python script, lmao).  
