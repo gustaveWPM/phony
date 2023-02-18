@@ -11,9 +11,10 @@ This is probably not the most rigorous way to achieve the sake of this project.
 - Deterministic generation (Finite generator)
 - Unsafe mode (to force a subpool upsert)
 - Configurable generator:
+    - i18n configuration template
     - Country code
-    - Operator code
-    - Rules for the generation of the pseudo-random tail element
+    - Operator codes
+    - Fine-tuning rules for the generation of the pseudo-random tail element
 
 ## How to run
 
