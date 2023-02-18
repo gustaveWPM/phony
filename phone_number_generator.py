@@ -1,5 +1,5 @@
 from config import GENERATOR_CONFIG as GEN_CONF
-from db import save_phone_number, retrieve_last_saved_phone_metadatas
+from db import *
 
 DEBUG_MODE = False
 
