@@ -1,7 +1,7 @@
 from config import GENERATOR_CONFIG as GEN_CONF
-from db import DB_TABLE, retrieve_last_saved_phone_metadatas
+from db import save_phone_number, retrieve_last_saved_phone_metadatas
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 def reject_phone_number_suffix(phone_number_suffix) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
@@ -14,18 +14,6 @@ def reject_phone_number_suffix(phone_number_suffix) -> bool:
         if (phone_number_suffix.count(digit) > same_digit_threshold):
             return True
     return False
-
-def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str):
-    database_entry = {
-        "phone_number": phone_number,
-        "country_code": country_code,
-        "operator_code": operator_code,
-        "generated_suffix": phone_number_suffix
-    }
-
-    DB_TABLE.update_one({"phone_number": phone_number}, {"$set": database_entry}, upsert=True)
-    if (DEBUG_MODE):
-        print(f"[DEBUG] Generated phone number: {phone_number}")
 
 def append_heading_zeros(number, ndigits, magnitude):
     number_as_string = str(number)
@@ -49,6 +37,8 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
             if (not reject_phone_number_suffix(current_phone_number_suffix)):
                 currrent_phone_number = prefix + current_phone_number_suffix
                 save_phone_number(currrent_phone_number, country_code, current_operator_code, current_phone_number_suffix)
+                if (DEBUG_MODE):
+                    print(f"[DEBUG] Generated phone number: {currrent_phone_number}")
 
 def compute_first_iteration_value(metadatas):
     first_iteration = 0

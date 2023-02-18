@@ -28,6 +28,17 @@ def _retrieve_last_saved_phone_number_suffix(entry) -> str:
     data = entry["generated_suffix"]
     return data
 
+
+def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str):
+    database_entry = {
+        "phone_number": phone_number,
+        "country_code": country_code,
+        "operator_code": operator_code,
+        "generated_suffix": phone_number_suffix
+    }
+
+    DB_TABLE.update_one({"phone_number": phone_number}, {"$set": database_entry}, upsert=True)
+
 def retrieve_last_saved_phone_metadatas():
     entry = _retrieve_last_saved_phone_number_entry()
     if (entry is None):
