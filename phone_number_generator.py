@@ -26,11 +26,11 @@ def append_heading_zeros(number, ndigits, magnitude):
 
 def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
     max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
+    magnitude = 10 ** (ndigits - 1)
     country_code = prefix_data["COUNTRY_CODE"]
 
     for current_operator_code in prefix_data["OPERATOR_CODES"]:
         prefix = country_code + current_operator_code
-        magnitude = 10 ** (ndigits - 1)
 
         for current_iteration in range(first_iteration, max_iteration):
             current_phone_number_suffix = append_heading_zeros(current_iteration, ndigits, magnitude)
