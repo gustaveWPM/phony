@@ -11,10 +11,10 @@ This is probably not the most rigorous way to achieve the sake of this project.
 - Unsafe mode (to force a subpool upsert)
 - Configurable generator (two heading element, + rules of pseudo-random generation for the tail element)
 
-## How to run
+## How to run
 
 `$ python3 phone_number_generator.py`
 
-### Dependencies
+### Dependencies
 
 - [pymongo](https://pypi.org/project/pymongo/)
