@@ -1,7 +1,7 @@
 # Phone numbers pool generator
 
 Just a side project made for the fun.  
-**CAUTION: I am neither a telephony nor a Python pro**.  
+**CAUTION: I am neither a telephony nor a Python pro** (this is my first Python script, lmao).  
 This is probably not the most rigorous way to achieve the sake of this project.
 
 ## Features
