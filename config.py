@@ -10,5 +10,7 @@ GENERATOR_CONFIG = {
 }
 
 DB_CONFIG = {
-    "MONGO_DB_CONNECTION_ROUTE": "mongodb://localhost:27017/"
+    "MONGO_DB_CONNECTION_ROUTE": "mongodb://localhost:27017/",
+    "MONGO_DB_NAME": "phone_book",
+    "MONGO_DB_TABLE": "france"
 }

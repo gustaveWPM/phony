@@ -2,8 +2,12 @@ import pymongo
 from config import DB_CONFIG as DB_CONF
 
 MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_ROUTE"])
-DB = MONGO_CLIENT["phone_book"]
-DB_TABLE = DB["france"]
+
+DB_NAME_KEY = DB_CONF["MONGO_DB_NAME"]
+DB_TABLE_KEY = DB_CONF["MONGO_DB_TABLE"]
+
+DB = MONGO_CLIENT[DB_NAME_KEY]
+DB_TABLE = DB[DB_TABLE_KEY]
 
 def _retrieve_last_saved_phone_number_entry():
     try:
