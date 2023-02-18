@@ -18,7 +18,7 @@ This is probably not the most rigorous way to achieve the sake of this project.
 
 ## How to run
 
-`$ python3 phone_number_generator.py`
+`$ python3 run.py`
 
 ### Dependencies
 
