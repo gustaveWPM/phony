@@ -7,10 +7,22 @@ GENERATOR: dict = {
             "DESK": False,
             "MOBILE": True
         }
-    }
+    },
+
+    "NDIGITS": "{BUILDER}",
+    "SAME_DIGIT_THRESHOLD": "{BUILDER}",
+    "CONSECUTIVE_SAME_DIGIT_THRESHOLD": "{BUILDER}",
+    "HEAD_MAX_ZEROS": "{BUILDER}",
+    "PREFIX_DATA": "{BUILDER}"
 }
 
-# * ... I'll just inject all the rest of the config for you, you don't mind?
+
+#================================================
+
+
+def get_targeted_country() -> str:
+    return GENERATOR["TARGET"]["COUNTRY"]
+
 
 import config.builders.generator as builder
 builder.append_dynamic_conf(GENERATOR)

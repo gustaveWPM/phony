@@ -15,6 +15,7 @@ class PrefixData:
         self.__start_with_desk: bool = False
         self._dictionnary_builder()
 
+
     def _dictionnary_builder(self) -> None:
         country_code = self.__country_code
         operator_desk_codes = self.__operator_desk_codes
@@ -35,10 +36,12 @@ class PrefixData:
             return self.__dict["COUNTRY_CODE"]
         self.__dict["COUNTRY_CODE"] = value
 
+
     def operator_mobile_codes(self, value: Optional[List[str]] = None) -> Optional[List[str]]:
         if (value is None):
             return self.__dict["OPERATOR_CODES"]["MOBILE"]
         self.__dict["OPERATOR_CODES"]["MOBILE"] = value
+
 
     def operator_desk_codes(self, value: Optional[List[str]] = None) -> Optional[List[str]]:
         if (value is None):
