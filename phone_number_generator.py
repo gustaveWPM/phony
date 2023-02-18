@@ -37,10 +37,6 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
             if (not reject_phone_number_suffix(current_phone_number_suffix)):
                 currrent_phone_number = prefix + current_phone_number_suffix
                 save_phone_number(currrent_phone_number, country_code, current_operator_code, current_phone_number_suffix)
-
-                appendFiniteCollectionIndicator()
-                return
-
                 if (DEBUG_MODE):
                     print(f"[DEBUG] Generated phone number: {currrent_phone_number}")
 
