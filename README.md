@@ -9,7 +9,10 @@ This is probably not the most rigorous way to achieve the sake of this project.
 - Data Persistence (MongoDB)
 - Deterministic generation (Finite generator)
 - Unsafe mode (to force a subpool upsert)
-- Configurable generator (two heading element, + rules of pseudo-random generation for the tail element)
+- Configurable generator:
+    - Country code
+    - Operator code
+    - Rules for the generation of the pseudo-random tail element
 
 ## How to run
 
