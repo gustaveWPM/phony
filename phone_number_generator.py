@@ -1,16 +1,8 @@
 import pymongo
 from config import GENERATOR_CONFIG as GEN_CONF
-from db import DB_TABLE
+from db import DB_TABLE, retrieve_last_saved_phone_metadatas
 
 DEBUG_MODE = False
-
-def retrieve_last_saved_phone_number_suffix() -> str:
-    try:
-        last_saved_phone_number_entry = DB_TABLE.find_one(sort=[( "_id", pymongo.DESCENDING )])
-        last_saved_phone_number = last_saved_phone_number_entry["generated_suffix"]
-        return last_saved_phone_number
-    except:
-        return '0'
 
 def reject_phone_number_suffix(phone_number_suffix) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
@@ -59,6 +51,13 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
             currrent_phone_number = prefix + current_phone_number_suffix
             save_phone_number(currrent_phone_number, prefix_data, current_phone_number_suffix)
 
+def compute_first_iteration_value(metadatas):
+    first_iteration = 0
+    if (metadatas is None):
+        return first_iteration
+    first_iteration = int(metadatas["phone_number_suffix"]) + 1
+    return first_iteration
+
 def config_error_handling():
     if (GEN_CONF["NDIGITS"] < GEN_CONF["SAME_DIGIT_THRESHOLD"]):
         raise ValueError("Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
@@ -71,7 +70,8 @@ def run_phone_numbers_generator():
     config_error_handling()
     prefix_data = GEN_CONF["PREFIX_DATA"]
     ndigits = GEN_CONF["NDIGITS"]
-    first_iteration = int(retrieve_last_saved_phone_number_suffix()) + 1
+    last_saved_phone_metadatas = retrieve_last_saved_phone_metadatas()
+    first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
     do_generate(ndigits, prefix_data, first_iteration)
     print("Mission complete!")
 
