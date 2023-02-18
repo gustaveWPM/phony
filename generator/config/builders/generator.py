@@ -14,9 +14,9 @@ def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     country_code: str = countries_service.get_country_code(country)
 
     if options["DESK"]:
-        operator_desk_codes.append(countries_service.get_country_desk_operator_codes(country))
+        operator_desk_codes = countries_service.get_country_desk_operator_codes(country)
     if options["MOBILE"]:
-        operator_mobile_codes.append(countries_service.get_country_mobile_operator_codes(country))
+        operator_mobile_codes = countries_service.get_country_mobile_operator_codes(country)
 
     prefix_data: PrefixData = PrefixData(country_code, operator_desk_codes, operator_mobile_codes)
     return prefix_data

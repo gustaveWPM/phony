@@ -41,23 +41,30 @@ def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
     return phone_suffix
 
 
-def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) -> Void:
-    country_code: str = ''
-    head_max_zeros: int = 0
+def _compute_max_iter(ndigits: int, op_code: str) -> int:
+    max_iteration: int = 0
+    computed_ndigits: int = ndigits - len(op_code)
 
     if (DEV.FORCED_MAX_ITERATION != -1 and DEV.UNSAFE):
-        max_iteration: int = DEV.FORCED_MAX_ITERATION
+        max_iteration = DEV.FORCED_MAX_ITERATION
     else:
         t: int = CONF["SAME_DIGIT_THRESHOLD"]
-        n: int = CONF["NDIGITS"]
+        n: int = computed_ndigits
         max_iteration = int('9' * (t + 1) + '0' * abs(n - t)) // 10 + 1
+    return max_iteration
+
+
+def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: int, op_codes: List[str]):
+    country_code: str = ''
+    head_max_zeros: int = 0
     country_code = prefix_data.country_code()
     head_max_zeros = CONF["HEAD_MAX_ZEROS"]
 
-    for cur_operator_code in prefix_data["OPERATOR_CODES"]:
+    for cur_operator_code in op_codes:
         prefix: str = country_code + cur_operator_code
         computed_ndigits: int = ndigits - len(cur_operator_code)
         magnitude: int = 10 ** (computed_ndigits - 1)
+        max_iteration: int = _compute_max_iter(ndigits, cur_operator_code)
 
         if (head_max_zeros == 0 and first_iteration < magnitude):
             first_iteration = magnitude
@@ -72,6 +79,21 @@ def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) ->
                                   cur_operator_code, cur_phone_number_suffix)
                 if (DEV.DEBUG_MODE):
                     DebugLogger("GENERATED_PHONE_NUMBER", cur_phone_number)
+
+
+def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) -> Void:
+    op_codes_a: List[str] = []
+    op_codes_b: List[str] = []
+
+    if prefix_data.start_with_desk():
+        op_codes_a = prefix_data.operator_desk_codes()
+        op_codes_b = prefix_data.operator_mobile_codes()
+    else:
+        op_codes_a = prefix_data.operator_mobile_codes()
+        op_codes_b = prefix_data.operator_desk_codes()
+
+    _do_generate_loop(ndigits, prefix_data, first_iteration, op_codes_a)
+    _do_generate_loop(ndigits, prefix_data, first_iteration, op_codes_b)
 
 
 def _compute_first_iteration_value(metadatas: dict) -> int:
