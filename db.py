@@ -1,7 +1,7 @@
 import pymongo
 from config import DB_CONFIG as DB_CONF
 
-MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_ROUTE"])
+MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_URI"])
 
 DB_NAME_KEY = DB_CONF["MONGO_DB_NAME"]
 DB_TABLE_KEY = DB_CONF["MONGO_DB_TABLE"]
