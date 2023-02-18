@@ -1,4 +1,3 @@
-import pymongo
 from config import GENERATOR_CONFIG as GEN_CONF
 from db import DB_TABLE, retrieve_last_saved_phone_metadatas
 
