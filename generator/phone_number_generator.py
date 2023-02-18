@@ -78,7 +78,6 @@ def _compute_first_iter(metadatas: Optional[dict], ndigits: int, max_head_zeros:
         str_base = '0' * ndigits
         first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
         first_iteration = int(first_iteration_str)
-        print(first_iteration_str)
     return first_iteration
 
 
