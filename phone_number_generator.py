@@ -4,6 +4,7 @@ from db import *
 DEBUG_MODE = False
 UNSAFE = False
 FORCED_FIRST_ITERATION = -1 # * ... Default value is `-1`
+FORCED_MAX_ITERATION = -1 # * ... Default value is `-1`
 FORCED_OPERATOR_CODES = [] # * ... Default value is `[]`
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
@@ -28,7 +29,10 @@ def append_heading_zeros(number: int, ndigits: int, magnitude: int):
     return phone_suffix
 
 def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
-    max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
+    if (FORCED_MAX_ITERATION != -1 and UNSAFE):
+        max_iteration = FORCED_MAX_ITERATION
+    else:
+        max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
     magnitude = 10 ** (ndigits - 1)
     country_code = prefix_data["COUNTRY_CODE"]
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
