@@ -1,4 +1,8 @@
-GENERATOR_CONFIG = {
+# coding: utf-8
+
+import builders.generator as builder
+
+GENERATOR: dict = {
     # * ... Number of digits in the complete phone suffix, operator code included
     "NDIGITS": 9,
     # * ... Maximum same digit amount in the generated block
@@ -8,14 +12,13 @@ GENERATOR_CONFIG = {
     # * ... Maximum consecutive 0 amount in the beginning of the generated block
     "HEAD_MAX_ZEROS": 1,
 
-    "PREFIX_DATA": {
-        "COUNTRY_CODE": "33",
-        "OPERATOR_CODES": ["6", "7"]
+    "TARGET": {
+        "COUNTRY": "FRANCE",
+        "OPTIONS": {
+            "DESK": False,
+            "MOBILE": True
+        }
     }
 }
 
-DB_CONFIG = {
-    "MONGO_DB_CONNECTION_URI": "mongodb://localhost:27017/",
-    "MONGO_DB_NAME": "phone_book",
-    "MONGO_DB_TABLE": "france"
-}
+GENERATOR = builder.generate_prefix_data(GENERATOR)

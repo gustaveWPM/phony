@@ -1,16 +1,22 @@
+# coding: utf-8
+
 import pymongo
-from config import DB_CONFIG as DB_CONF
+from typing import Optional
+from metaprog.aliases import Void
+from config.rules.dev.database import DB as CONF
 
-MONGO_CLIENT = pymongo.MongoClient(DB_CONF["MONGO_DB_CONNECTION_URI"])
+DISABLE_PERSISTENCE = CONF["DISABLE_PERSISTENCE"]
 
-DB_NAME_KEY = DB_CONF["MONGO_DB_NAME"]
-DB_TABLE_KEY = DB_CONF["MONGO_DB_TABLE"]
+MONGO_CLIENT = pymongo.MongoClient(CONF["MONGO_DB_CONNECTION_URI"])
+
+DB_NAME_KEY = CONF["MONGO_DB_NAME"]
+DB_TABLE_KEY = CONF["MONGO_DB_TABLE"]
 
 DB = MONGO_CLIENT[DB_NAME_KEY]
 DB_TABLE = DB[DB_TABLE_KEY]
 
 
-def _retrieve_last_saved_phone_number_entry():
+def _retrieve_last_saved_phone_number_entry() -> Optional[dict]:
     try:
         last_saved_phone_number_entry = DB_TABLE.find_one(
             sort=[("_id", pymongo.DESCENDING)])
@@ -34,7 +40,9 @@ def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
     return data
 
 
-def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str):
+def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
+    if (DISABLE_PERSISTENCE):
+        return
     database_entry = {
         "phone_number": phone_number,
         "country_code": country_code,
@@ -46,7 +54,9 @@ def save_phone_number(phone_number: str, country_code: str, operator_code: str, 
                         "$set": database_entry}, upsert=True)
 
 
-def retrieve_last_saved_phone_metadatas():
+def retrieve_last_saved_phone_metadatas() -> Optional[dict]:
+    if (DISABLE_PERSISTENCE):
+        return None
     entry = _retrieve_last_saved_phone_number_entry()
     if (entry is None):
         return None
@@ -58,3 +68,7 @@ def retrieve_last_saved_phone_metadatas():
     metadatas["phone_number_operator_code"] = _retrieve_last_saved_phone_operator_code(
         entry)
     return metadatas
+
+
+def append_finite_collection_indicator() -> Void:
+    save_phone_number("-1", "-1", "-1", "-1")
