@@ -15,15 +15,16 @@ def reject_phone_number_suffix(operator_code: str, phone_number_suffix: str) -> 
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold = GEN_CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
     digits = "0123456789"
+    whole_phone_number = operator_code + phone_number_suffix
 
     if (phone_number_suffix.startswith('0' * (head_max_zeros + 1))):
         return True
     for digit in digits:
-        if (phone_number_suffix.count(digit) > same_digit_threshold):
+        if (whole_phone_number.count(digit) > same_digit_threshold):
             return True
         if (same_consecutive_digit_threshold > 0):
             try:
-                phone_number_suffix.index(
+                whole_phone_number.index(
                     digit * same_consecutive_digit_threshold)
                 return True
             except:
