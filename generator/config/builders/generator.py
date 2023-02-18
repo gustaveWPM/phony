@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from metaprog.aliases import Void
 from typing import List
 import obj.services.countries as countries_service
 from obj.contracts.prefix_data import PrefixData
@@ -32,7 +33,7 @@ def _generate_prefix_data(target: dict) -> PrefixData:
     return _do_generate_prefix_data(country, options)
 
 
-def append_dynamic_conf(conf: dict) -> dict:
+def append_dynamic_conf(conf: dict) -> Void:
     target: dict = conf["TARGET"]
     conf["PREFIX_DATA"]: PrefixData = _generate_prefix_data(target)
     return conf

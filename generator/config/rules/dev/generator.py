@@ -1,8 +1,8 @@
 # coding: utf-8
 
-DEBUG_MODE: bool = True
+DEBUG_MODE: bool = False                     # * ... Default value is `False`
 
-UNSAFE: bool = False
+UNSAFE: bool = False                        # * ... Default value is `False`
 DISABLE_SMART_RELOAD: bool = False          # * ... Default value is `False`
 FORCE_VERY_FIRST_ITERATION_VALUE = False    # * ... Default value is `False`
 
