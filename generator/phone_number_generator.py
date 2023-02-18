@@ -25,7 +25,7 @@ def _reject_phone_number_suffix(operator_code: str, phone_number_suffix: str) ->
         if (whole_phone_number.count(digit) > same_digit_threshold):
             return True
         if (same_consecutive_digit_threshold > 0):
-            pattern = digit * same_consecutive_digit_threshold
+            pattern = digit * (same_consecutive_digit_threshold + 1)
             if pattern in whole_phone_number:
                 return True
     return False
