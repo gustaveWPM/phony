@@ -54,7 +54,10 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int):
                     print(f"[DEBUG] Generated phone number: {currrent_phone_number}")
 
 def compute_first_iteration_value(metadatas):
-    first_iteration = int(VERY_FIRST_ITERATION)
+    if (UNSAFE):
+        first_iteration = int(VERY_FIRST_ITERATION)
+    else:
+        first_iteration = 0
     if (metadatas is None):
         return first_iteration
     first_iteration = int(metadatas["phone_number_suffix"]) + 1
