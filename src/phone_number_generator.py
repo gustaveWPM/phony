@@ -2,12 +2,13 @@ from config import GENERATOR_CONFIG as GEN_CONF
 from db import *
 
 DEBUG_MODE = True
-UNSAFE = False
-FORCED_FIRST_ITERATION = -1 # * ... Default value is `-1`
-FORCED_MAX_ITERATION = -1 # * ... Default value is `-1`
-FORCED_OPERATOR_CODES = [] # * ... Default value is `[]`
 
-VERY_FIRST_ITERATION = "0" # * ... Default value is `"0"`
+UNSAFE = False
+FORCED_FIRST_ITERATION = -1  # * ... Default value is `-1`
+FORCED_MAX_ITERATION = -1    # * ... Default value is `-1`
+FORCED_OPERATOR_CODES = []   # * ... Default value is `[]`
+VERY_FIRST_ITERATION = "0"   # * ... Default value is `"0"`
+
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
@@ -21,6 +22,7 @@ def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
             return True
     return False
 
+
 def append_heading_zeros(number: int, ndigits: int, magnitude: int):
     number_as_string = str(number)
     if (number >= magnitude):
@@ -30,11 +32,13 @@ def append_heading_zeros(number: int, ndigits: int, magnitude: int):
     phone_suffix = '0' * number_of_zeros_to_append + number_as_string
     return phone_suffix
 
+
 def do_generate(ndigits: int, prefix_data: dict, first_iteration: int):
     if (FORCED_MAX_ITERATION != -1 and UNSAFE):
         max_iteration = FORCED_MAX_ITERATION
     else:
-        max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
+        max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(
+            GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1  # * ... lol
     magnitude = 10 ** (ndigits - 1)
     country_code = prefix_data["COUNTRY_CODE"]
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
@@ -44,14 +48,19 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int):
 
     for current_operator_code in prefix_data["OPERATOR_CODES"]:
         prefix = country_code + current_operator_code
+        computed_ndigits = ndigits - len(current_operator_code)
 
         for current_iteration in range(first_iteration, max_iteration):
-            current_phone_number_suffix = append_heading_zeros(current_iteration, ndigits, magnitude)
+            current_phone_number_suffix = append_heading_zeros(
+                current_iteration, computed_ndigits, magnitude)
             if (not reject_phone_number_suffix(current_phone_number_suffix)):
                 currrent_phone_number = prefix + current_phone_number_suffix
-                save_phone_number(currrent_phone_number, country_code, current_operator_code, current_phone_number_suffix)
+                save_phone_number(currrent_phone_number, country_code,
+                                  current_operator_code, current_phone_number_suffix)
                 if (DEBUG_MODE):
-                    print(f"[DEBUG] Generated phone number: {currrent_phone_number}")
+                    print(
+                        f"[DEBUG] Generated phone number: {currrent_phone_number}")
+
 
 def compute_first_iteration_value(metadatas):
     if (UNSAFE):
@@ -63,6 +72,7 @@ def compute_first_iteration_value(metadatas):
     first_iteration = int(metadatas["phone_number_suffix"]) + 1
     return first_iteration
 
+
 def compute_operator_codes_slice(metadatas, operator_codes: list):
     if (metadatas is None):
         return operator_codes
@@ -71,17 +81,24 @@ def compute_operator_codes_slice(metadatas, operator_codes: list):
     operator_codes = operator_codes[index:]
     return operator_codes
 
+
 def config_error_handling():
     if (GEN_CONF["NDIGITS"] < GEN_CONF["SAME_DIGIT_THRESHOLD"]):
-        raise ValueError("Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
+        raise ValueError(
+            "Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
     if (GEN_CONF["NDIGITS"] < GEN_CONF["HEAD_MAX_ZEROS"]):
-        raise ValueError("Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS")
+        raise ValueError(
+            "Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS")
     if (GEN_CONF["SAME_DIGIT_THRESHOLD"] <= 0):
-        raise ValueError("Invalid configuration: SAME_DIGIT_THRESHOLD should be a positive value, greater than 0")
+        raise ValueError(
+            "Invalid configuration: SAME_DIGIT_THRESHOLD should be a positive value, greater than 0")
     if (GEN_CONF["NDIGITS"] <= 0):
-        raise ValueError("Invalid configuration: NDIGITS should be a positive value, greater than 0")
+        raise ValueError(
+            "Invalid configuration: NDIGITS should be a positive value, greater than 0")
     if (GEN_CONF["HEAD_MAX_ZEROS"] < 0):
-        raise ValueError("Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
+        raise ValueError(
+            "Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
+
 
 def skip_generation(data) -> bool:
     if (data is None):
@@ -91,8 +108,10 @@ def skip_generation(data) -> bool:
             return False
     return True
 
+
 def appendFiniteCollectionIndicator():
     save_phone_number("-1", "-1", "-1", "-1")
+
 
 def run_phone_numbers_generator():
     config_error_handling()
@@ -107,16 +126,19 @@ def run_phone_numbers_generator():
     if (FORCED_FIRST_ITERATION != -1 and UNSAFE):
         first_iteration = FORCED_FIRST_ITERATION
     else:
-        first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
+        first_iteration = compute_first_iteration_value(
+            last_saved_phone_metadatas)
 
     if (FORCED_OPERATOR_CODES and UNSAFE):
         prefix_data["OPERATOR_CODES"] = FORCED_OPERATOR_CODES
     else:
-        prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
+        prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(
+            last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
 
     do_generate(ndigits, prefix_data, first_iteration)
     appendFiniteCollectionIndicator()
     print("Mission complete!")
+
 
 if __name__ == "__main__":
     run_phone_numbers_generator()

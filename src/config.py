@@ -1,7 +1,10 @@
 GENERATOR_CONFIG = {
-    "NDIGITS": 8, # * ... Number of digits in the pseudo randomly generated block
-    "SAME_DIGIT_THRESHOLD": 4, # * ... Maximum same digit amount in the generated block
-    "HEAD_MAX_ZEROS": 1, # * ... Maximum consecutive 0 amount in the beginning of the generated block
+    # * ... Number of digits in the complete phone suffix, operator code included
+    "NDIGITS": 9,
+    # * ... Maximum same digit amount in the generated block
+    "SAME_DIGIT_THRESHOLD": 4,
+    # * ... Maximum consecutive 0 amount in the beginning of the generated block
+    "HEAD_MAX_ZEROS": 1,
 
     "PREFIX_DATA": {
         "COUNTRY_CODE": "33",
