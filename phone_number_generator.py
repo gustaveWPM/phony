@@ -2,7 +2,8 @@ from config import GENERATOR_CONFIG as GEN_CONF
 from db import *
 
 DEBUG_MODE = False
-FORCED_FIRST_ITERATION = -1
+FORCED_FIRST_ITERATION = -1 # * ... Default value is `-1`
+FORCED_OPERATOR_CODES = [] # * ... Default value is `[]`
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
@@ -88,14 +89,21 @@ def run_phone_numbers_generator():
     prefix_data = GEN_CONF["PREFIX_DATA"]
     ndigits = GEN_CONF["NDIGITS"]
     last_saved_phone_metadatas = retrieve_last_saved_phone_metadatas()
+
     if (skip_generation(last_saved_phone_metadatas)):
         print("You already have a finite phonebook.")
         return
+
     if (FORCED_FIRST_ITERATION == -1):
         first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
-        prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
     else:
         first_iteration = FORCED_FIRST_ITERATION
+
+    if (FORCED_OPERATOR_CODES):
+        prefix_data["OPERATOR_CODES"] = FORCED_OPERATOR_CODES
+    else:
+        prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
+
     do_generate(ndigits, prefix_data, first_iteration)
     appendFiniteCollectionIndicator()
     print("Mission complete!")
