@@ -37,6 +37,10 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
             if (not reject_phone_number_suffix(current_phone_number_suffix)):
                 currrent_phone_number = prefix + current_phone_number_suffix
                 save_phone_number(currrent_phone_number, country_code, current_operator_code, current_phone_number_suffix)
+
+                appendFiniteCollectionIndicator()
+                return
+
                 if (DEBUG_MODE):
                     print(f"[DEBUG] Generated phone number: {currrent_phone_number}")
 
@@ -63,14 +67,29 @@ def config_error_handling():
     if (GEN_CONF["NDIGITS"] <= 0):
         raise ValueError("Invalid configuration: NDIGITS should be a positive value, greater than 0")
 
+def skip_generation(data) -> bool:
+    if (data is None):
+        return False
+    for key in data:
+        if (data[key] != "-1"):
+            return False
+    return True
+
+def appendFiniteCollectionIndicator():
+    save_phone_number("-1", "-1", "-1", "-1")
+
 def run_phone_numbers_generator():
     config_error_handling()
     prefix_data = GEN_CONF["PREFIX_DATA"]
     ndigits = GEN_CONF["NDIGITS"]
     last_saved_phone_metadatas = retrieve_last_saved_phone_metadatas()
+    if (skip_generation(last_saved_phone_metadatas)):
+        print("You already have a finite phonebook.")
+        return
     first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
     prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
     do_generate(ndigits, prefix_data, first_iteration)
+    appendFiniteCollectionIndicator()
     print("Mission complete!")
 
 if __name__ == "__main__":
