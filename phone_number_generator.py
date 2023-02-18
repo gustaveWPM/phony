@@ -3,7 +3,7 @@ from db import save_phone_number, retrieve_last_saved_phone_metadatas
 
 DEBUG_MODE = False
 
-def reject_phone_number_suffix(phone_number_suffix) -> bool:
+def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
     digits = "0123456789"
@@ -15,7 +15,7 @@ def reject_phone_number_suffix(phone_number_suffix) -> bool:
             return True
     return False
 
-def append_heading_zeros(number, ndigits, magnitude):
+def append_heading_zeros(number: int, ndigits: int, magnitude: int):
     number_as_string = str(number)
     if (number >= magnitude):
         return number_as_string
@@ -47,7 +47,7 @@ def compute_first_iteration_value(metadatas):
     first_iteration = int(metadatas["phone_number_suffix"]) + 1
     return first_iteration
 
-def compute_operator_codes_slice(metadatas, operator_codes):
+def compute_operator_codes_slice(metadatas, operator_codes: list):
     if (metadatas is None):
         return operator_codes
     last_operator_code = metadatas["phone_number_operator_code"]
