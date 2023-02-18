@@ -5,7 +5,7 @@ GENERATOR_CONFIG = {
 
     "PREFIX_DATA": {
         "COUNTRY_CODE": "33",
-        "OPERATOR_CODE": "6"
+        "OPERATOR_CODES": ["6", "7"]
     }
 }
 
