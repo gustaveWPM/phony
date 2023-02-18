@@ -1,7 +1,7 @@
 from config import GENERATOR_CONFIG as GEN_CONF
 from db import *
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 FORCED_FIRST_ITERATION = -1
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
