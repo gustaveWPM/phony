@@ -13,20 +13,14 @@ def _retrieve_last_saved_phone_number_entry():
         return None
 
 def _retrieve_last_saved_phone_operator_code(entry) -> str:
-    if (entry is None):
-        return "-1"
     data = entry["operator_code"]
     return data
 
 def _retrieve_last_saved_phone_country_code(entry) -> str:
-    if (entry is None):
-        return "-1"
     data = entry["country_code"]
     return data
 
 def _retrieve_last_saved_phone_number_suffix(entry) -> str:
-    if (entry is None):
-        return '0'
     data = entry["generated_suffix"]
     return data
 
