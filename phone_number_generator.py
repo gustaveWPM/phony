@@ -1,14 +1,15 @@
 from config import GENERATOR_CONFIG as GEN_CONF
 from db import *
 
-DEBUG_MODE = False
+DEBUG_MODE = True
+FORCED_FIRST_ITERATION = -1
 
 def reject_phone_number_suffix(phone_number_suffix: str) -> bool:
     head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
     same_digit_threshold = GEN_CONF["SAME_DIGIT_THRESHOLD"]
     digits = "0123456789"
 
-    if (phone_number_suffix.startswith('0' * head_max_zeros)):
+    if (phone_number_suffix.startswith('0' * (head_max_zeros + 1))):
         return True
     for digit in digits:
         if (phone_number_suffix.count(digit) > same_digit_threshold):
@@ -28,6 +29,10 @@ def do_generate(ndigits: int, prefix_data: dict, first_iteration: int = 0):
     max_iteration = int('9' * (GEN_CONF["SAME_DIGIT_THRESHOLD"] + 1) + '0' * abs(GEN_CONF["NDIGITS"] - GEN_CONF["SAME_DIGIT_THRESHOLD"])) // 10 + 1 # * ... lol
     magnitude = 10 ** (ndigits - 1)
     country_code = prefix_data["COUNTRY_CODE"]
+    head_max_zeros = GEN_CONF["HEAD_MAX_ZEROS"]
+
+    if (head_max_zeros == 0 and first_iteration < magnitude):
+        first_iteration = magnitude
 
     for current_operator_code in prefix_data["OPERATOR_CODES"]:
         prefix = country_code + current_operator_code
@@ -58,10 +63,14 @@ def compute_operator_codes_slice(metadatas, operator_codes: list):
 def config_error_handling():
     if (GEN_CONF["NDIGITS"] < GEN_CONF["SAME_DIGIT_THRESHOLD"]):
         raise ValueError("Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
+    if (GEN_CONF["NDIGITS"] < GEN_CONF["HEAD_MAX_ZEROS"]):
+        raise ValueError("Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS")
     if (GEN_CONF["SAME_DIGIT_THRESHOLD"] <= 0):
         raise ValueError("Invalid configuration: SAME_DIGIT_THRESHOLD should be a positive value, greater than 0")
     if (GEN_CONF["NDIGITS"] <= 0):
         raise ValueError("Invalid configuration: NDIGITS should be a positive value, greater than 0")
+    if (GEN_CONF["HEAD_MAX_ZEROS"] < 0):
+        raise ValueError("Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
 
 def skip_generation(data) -> bool:
     if (data is None):
@@ -82,8 +91,11 @@ def run_phone_numbers_generator():
     if (skip_generation(last_saved_phone_metadatas)):
         print("You already have a finite phonebook.")
         return
-    first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
-    prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
+    if (FORCED_FIRST_ITERATION == -1):
+        first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
+        prefix_data["OPERATOR_CODES"] = compute_operator_codes_slice(last_saved_phone_metadatas, prefix_data["OPERATOR_CODES"])
+    else:
+        first_iteration = FORCED_FIRST_ITERATION
     do_generate(ndigits, prefix_data, first_iteration)
     appendFiniteCollectionIndicator()
     print("Mission complete!")
