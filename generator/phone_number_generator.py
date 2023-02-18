@@ -45,7 +45,7 @@ def _compute_max_iter(ndigits: int, op_code: str) -> int:
     max_iteration: int = 0
     computed_ndigits: int = ndigits - len(op_code)
 
-    if (DEV.FORCED_MAX_ITERATION != -1 and DEV.UNSAFE):
+    if (DEV.FORCED_MAX_ITERATION >= 0 and DEV.UNSAFE):
         max_iteration = DEV.FORCED_MAX_ITERATION
     else:
         t: int = CONF["SAME_DIGIT_THRESHOLD"]
@@ -149,7 +149,7 @@ def _run_phone_numbers_generator() -> Void:
         print(VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
         return
 
-    if (DEV.FORCED_FIRST_ITERATION != -1 and DEV.UNSAFE):
+    if (DEV.FORCED_FIRST_ITERATION >= 0 and DEV.UNSAFE):
         first_iteration = DEV.FORCED_FIRST_ITERATION
     else:
         first_iteration = _compute_first_iteration_value(reload_metas)
