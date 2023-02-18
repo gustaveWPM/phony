@@ -18,7 +18,7 @@ DB_TABLE = DB[DB_TABLE_KEY]
 
 def _retrieve_last_saved_phone_number_entry() -> Optional[dict]:
     try:
-        last_saved_phone_number_entry = DB_TABLE.find_one(
+        last_saved_phone_number_entry: dict = DB_TABLE.find_one(
             sort=[("_id", pymongo.DESCENDING)])
         return last_saved_phone_number_entry
     except:
@@ -26,24 +26,24 @@ def _retrieve_last_saved_phone_number_entry() -> Optional[dict]:
 
 
 def _retrieve_last_saved_phone_operator_code(entry: dict) -> str:
-    data = entry["operator_code"]
+    data: str = entry["operator_code"]
     return data
 
 
 def _retrieve_last_saved_phone_country_code(entry: dict) -> str:
-    data = entry["country_code"]
+    data: str = entry["country_code"]
     return data
 
 
 def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
-    data = entry["generated_suffix"]
+    data: str = entry["generated_suffix"]
     return data
 
 
 def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
     if (DISABLE_PERSISTENCE):
         return
-    database_entry = {
+    database_entry: dict = {
         "phone_number": phone_number,
         "country_code": country_code,
         "operator_code": operator_code,
@@ -57,10 +57,10 @@ def save_phone_number(phone_number: str, country_code: str, operator_code: str, 
 def retrieve_last_saved_phone_metadatas() -> Optional[dict]:
     if (DISABLE_PERSISTENCE):
         return None
-    entry = _retrieve_last_saved_phone_number_entry()
+    entry: Optional[dict] = _retrieve_last_saved_phone_number_entry()
     if (entry is None):
         return None
-    metadatas = {}
+    metadatas: dict = {}
     metadatas["phone_number_suffix"] = _retrieve_last_saved_phone_number_suffix(
         entry)
     metadatas["phone_number_country_code"] = _retrieve_last_saved_phone_country_code(
@@ -72,3 +72,10 @@ def retrieve_last_saved_phone_metadatas() -> Optional[dict]:
 
 def append_finite_collection_indicator() -> Void:
     save_phone_number("-1", "-1", "-1", "-1")
+
+
+def is_finite_collection(data: dict) -> bool:
+    for key in data:
+        if (data[key] != "-1"):
+            return False
+    return True

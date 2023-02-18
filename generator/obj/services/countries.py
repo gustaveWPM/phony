@@ -3,7 +3,7 @@
 from config.rules.countries import COUNTRIES
 from typing import List
 
-_COUNTRIES_LIST = list(COUNTRIES.keys())
+_COUNTRIES_LIST: List[str] = list(COUNTRIES.keys())
 
 
 def is_valid_country(key: str) -> bool:

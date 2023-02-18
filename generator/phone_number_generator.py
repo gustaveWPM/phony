@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from typing import Optional
+from typing import Optional, List
 from metaprog.logger import debug_logger as DebugLogger
 from metaprog.vocab import VOCAB
 from metaprog.aliases import *
@@ -12,11 +12,12 @@ import database.db as db
 
 
 def _reject_phone_number_suffix(operator_code: str, phone_number_suffix: str) -> bool:
-    head_max_zeros = CONF["HEAD_MAX_ZEROS"]
-    same_digit_threshold = CONF["SAME_DIGIT_THRESHOLD"]
-    same_consecutive_digit_threshold = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
-    digits = "0123456789"
-    whole_phone_number = operator_code + phone_number_suffix
+    head_max_zeros: int = CONF["HEAD_MAX_ZEROS"]
+    same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
+    same_consecutive_digit_threshold: int = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
+    digits: str = "0123456789"
+    whole_phone_number: str = operator_code + phone_number_suffix
+    pattern: str = ''
 
     if (phone_number_suffix.startswith('0' * (head_max_zeros + 1))):
         return True
@@ -31,39 +32,42 @@ def _reject_phone_number_suffix(operator_code: str, phone_number_suffix: str) ->
 
 
 def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
-    number_as_string = str(number)
+    number_as_string: str = str(number)
     if (number >= magnitude):
         return number_as_string
-    number_len = len(number_as_string)
-    number_of_zeros_to_append = abs(ndigits - number_len)
-    phone_suffix = '0' * number_of_zeros_to_append + number_as_string
+    number_len: int = len(number_as_string)
+    number_of_zeros_to_append: int = abs(ndigits - number_len)
+    phone_suffix: str = '0' * number_of_zeros_to_append + number_as_string
     return phone_suffix
 
 
 def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) -> Void:
+    country_code: str = ''
+    head_max_zeros: int = 0
+
     if (DEV.FORCED_MAX_ITERATION != -1 and DEV.UNSAFE):
-        max_iteration = DEV.FORCED_MAX_ITERATION
+        max_iteration: int = DEV.FORCED_MAX_ITERATION
     else:
-        t = CONF["SAME_DIGIT_THRESHOLD"]
-        n = CONF["NDIGITS"]
+        t: int = CONF["SAME_DIGIT_THRESHOLD"]
+        n: int = CONF["NDIGITS"]
         max_iteration = int('9' * (t + 1) + '0' * abs(n - t)) // 10 + 1
-    country_code = prefix_data.get_country_code()
+    country_code = prefix_data.country_code()
     head_max_zeros = CONF["HEAD_MAX_ZEROS"]
 
     for cur_operator_code in prefix_data["OPERATOR_CODES"]:
-        prefix = country_code + cur_operator_code
-        computed_ndigits = ndigits - len(cur_operator_code)
-        magnitude = 10 ** (computed_ndigits - 1)
+        prefix: str = country_code + cur_operator_code
+        computed_ndigits: int = ndigits - len(cur_operator_code)
+        magnitude: int = 10 ** (computed_ndigits - 1)
 
         if (head_max_zeros == 0 and first_iteration < magnitude):
             first_iteration = magnitude
 
         for current_iteration in range(first_iteration, max_iteration):
-            cur_phone_number_suffix = _append_heading_zeros(
+            cur_phone_number_suffix: str = _append_heading_zeros(
                 current_iteration, computed_ndigits, magnitude)
 
             if (not _reject_phone_number_suffix(cur_operator_code, cur_phone_number_suffix)):
-                cur_phone_number = prefix + cur_phone_number_suffix
+                cur_phone_number: str = prefix + cur_phone_number_suffix
                 db.save_phone_number(cur_phone_number, country_code,
                                   cur_operator_code, cur_phone_number_suffix)
                 if (DEV.DEBUG_MODE):
@@ -71,7 +75,11 @@ def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) ->
 
 
 def _compute_first_iteration_value(metadatas: dict) -> int:
-    if (DEV.UNSAFE):
+    first_iteration: int = 0
+    if (DEV.DISABLE_SMART_RELOAD):
+        first_iteration = 0
+        return first_iteration
+    if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
         first_iteration = int(DEV.VERY_FIRST_ITERATION)
     else:
         first_iteration = 0
@@ -81,30 +89,36 @@ def _compute_first_iteration_value(metadatas: dict) -> int:
     return first_iteration
 
 
-def _compute_operator_codes_slice(metadatas: Optional[dict], operator_codes: list):
+def _slice_operator_codes(metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
     if (metadatas is None):
-        return operator_codes
-    last_operator_code = metadatas["phone_number_operator_code"]
-    if last_operator_code in operator_codes:
-        index = operator_codes.index(last_operator_code)
-        operator_codes = operator_codes[index:]
-    return operator_codes
+        return
+    needle: str = metadatas["phone_number_operator_code"]
+
+    operator_desk_codes: List[str] = prefix_data.operator_desk_codes()
+    operator_mobile_codes: List[str] = prefix_data.operator_mobile_codes()
+
+    if needle in operator_desk_codes:
+        index: int = operator_desk_codes.index(needle)
+        prefix_data.operator_desk_codes(operator_desk_codes[index:])
+        prefix_data.start_with_desk(True)
+
+    if needle in operator_mobile_codes:
+        index: int = operator_mobile_codes.index(needle)
+        prefix_data.operator_mobile_codes(operator_mobile_codes[index:])
+        prefix_data.start_with_desk(False)
 
 
 def _skip_generation(data: Optional[dict]) -> bool:
     if (data is None):
         return False
-    for key in data:
-        if (data[key] != "-1"):
-            return False
-    return True
+    return db.is_finite_collection(data)
 
 
 def _run_phone_numbers_generator() -> Void:
+    first_iteration: int = 0
     prefix_data: PrefixData = CONF["PREFIX_DATA"]
-    ndigits = CONF["NDIGITS"]
-    reload_metas = db.retrieve_last_saved_phone_metadatas()
-    op_codes = prefix_data.get_operator_codes_union()
+    ndigits: int = CONF["NDIGITS"]
+    reload_metas: dict = db.retrieve_last_saved_phone_metadatas()
 
     if (_skip_generation(reload_metas)):
         print(VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
@@ -116,9 +130,9 @@ def _run_phone_numbers_generator() -> Void:
         first_iteration = _compute_first_iteration_value(reload_metas)
 
     if (DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE):
-        prefix_data["OPERATOR_CODES"] = DEV.FORCED_OPERATOR_CODES
+        prefix_data.force_operator_codes(DEV.FORCED_OPERATOR_CODES)
     else:
-        prefix_data["OPERATOR_CODES"] = _compute_operator_codes_slice(reload_metas, op_codes)
+        _slice_operator_codes(reload_metas, prefix_data)
 
     _do_generate(ndigits, prefix_data, first_iteration)
     db.append_finite_collection_indicator()

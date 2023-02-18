@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import builders.generator as builder
+import config.builders.generator as builder
 
 GENERATOR: dict = {
     # * ... Number of digits in the complete phone suffix, operator code included
@@ -21,4 +21,4 @@ GENERATOR: dict = {
     }
 }
 
-GENERATOR = builder.generate_prefix_data(GENERATOR)
+GENERATOR = builder.append_dynamic_conf(GENERATOR)
