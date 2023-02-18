@@ -79,9 +79,9 @@ def _do_generate_loop(ndigits: int, prefix_data: PrefixData, first_iteration: in
                                   cur_operator_code, cur_phone_number_suffix)
                 if (DEV.DEBUG_MODE):
                     DebugLogger("GENERATED_PHONE_NUMBER", cur_phone_number)
-            else:
-                cur_phone_number: str = prefix + cur_phone_number_suffix
-                print(f"Rejected: {cur_phone_number}")
+            # else:
+            #    cur_phone_number: str = prefix + cur_phone_number_suffix
+            #    print(f"Rejected: {cur_phone_number}")
 
 
 def _do_generate(ndigits: int, prefix_data: PrefixData, first_iteration: int) -> Void:

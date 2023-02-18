@@ -15,7 +15,7 @@ COUNTRIES: dict = {
             # * ... Maximum consecutive same digit amount anywhere in the generated block
             "CONSECUTIVE_SAME_DIGIT_THRESHOLD": 5,
             # * ... Maximum consecutive 0 amount in the beginning of the generated block
-            "HEAD_MAX_ZEROS": 1,
+            "HEAD_MAX_ZEROS": 1
         }
     }
 }
