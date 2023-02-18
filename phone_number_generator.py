@@ -95,10 +95,10 @@ def run_phone_numbers_generator():
         print("You already have a finite phonebook.")
         return
 
-    if (FORCED_FIRST_ITERATION == -1 and UNSAFE):
-        first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
-    else:
+    if (FORCED_FIRST_ITERATION != -1 and UNSAFE):
         first_iteration = FORCED_FIRST_ITERATION
+    else:
+        first_iteration = compute_first_iteration_value(last_saved_phone_metadatas)
 
     if (FORCED_OPERATOR_CODES and UNSAFE):
         prefix_data["OPERATOR_CODES"] = FORCED_OPERATOR_CODES
