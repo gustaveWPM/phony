@@ -7,6 +7,7 @@ This is probably not the most rigorous way to achieve the sake of this project.
 ## Features
 
 - Data Persistence (MongoDB)
+- Smart reload (Resumes at its last iteration)
 - Deterministic generation (Finite generator)
 - Unsafe mode (to force a subpool upsert)
 - Configurable generator:
