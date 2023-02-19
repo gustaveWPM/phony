@@ -5,7 +5,7 @@ from typing import Optional, List
 from generator.config.absolute_getters.generator import get_ndigits
 from generator.internal_lib.list import reverse, list_to_str
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
-from generator.sys.terminate import terminate
+from generator.sys.error import terminate
 
 
 def compute_range_len(op_code: str) -> int:
@@ -64,7 +64,7 @@ def _do_compute_range_end_tail(
         if total_cur_digit >= same_digit_threshold:
             current_digit -= 1
             if current_digit < 0:
-                terminate("You're not funny at all! Do you even know what you are doing with the config files?")
+                terminate("ERROR: You")
             continue
 
         trail_elements.append(current_digit)
@@ -94,11 +94,6 @@ def _do_compute_range_end(op_code: str, block_len: int) -> int:
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
     consecutive_nines_at_op_code_tail: int = _do_compute_consecutive_nines_at_op_code_tail(op_code)
-
-    # {ToDo} Move (and enhance to fit all digit cases) this logic in the validator
-    if consecutive_nines_at_op_code_tail > same_consecutive_digit_threshold:
-        terminate(f"Too much '9' at the tail of your op code ({op_code}). Check your CONSECUTIVE_SAME_DIGIT_THRESHOLD in your fine-tune config ({same_consecutive_digit_threshold}).")
-
     head_appended_nines: str = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
     head: str = op_code + head_appended_nines
     trail_len: int = block_len - len(head_appended_nines)
@@ -108,13 +103,9 @@ def _do_compute_range_end(op_code: str, block_len: int) -> int:
     return range_end
 
 
-def compute_range_end(ndigits: int, op_code: str) -> int:
+def compute_range_end(op_code: str) -> int:
     range_end: int = 0
     block_len: int = compute_range_len(op_code)
-
-    # {ToDo} Move this logic in the validator
-    if block_len < 0:
-        terminate(f"Bigger operator code len ({op_code}) than NDIGITS ({ndigits}).")
 
     if DEV_CONFIG.FORCED_RANGE_END >= 0 and DEV_CONFIG.UNSAFE:
         range_end = DEV_CONFIG.FORCED_RANGE_END

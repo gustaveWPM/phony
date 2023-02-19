@@ -85,8 +85,6 @@ def _do_generate_range(r: range, block_len: int, magnitude: int, cur_op_code: st
 
 
 def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optional[dict]):
-    ndigits: int = GENERATOR_CONFIG["NDIGITS"]
-
     for cur_op_code in op_codes:
         if _is_banned_op_code(cur_op_code):
             if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
@@ -94,7 +92,7 @@ def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optiona
             continue
         block_len: int = limit.compute_range_len(cur_op_code)
         magnitude: int = 10 ** (block_len - 1)
-        last_iteration: int = limit.compute_range_end(ndigits, cur_op_code)
+        last_iteration: int = limit.compute_range_end(cur_op_code)
         first_iteration: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
         r = range(first_iteration, last_iteration)
         _do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
