@@ -1,12 +1,13 @@
 # coding: utf-8
 
-from generator.debug.logger import debug_logger as DebugLogger
+from generator.debug.logger import debug_logger as debug_logger
 from generator.debug.vocab import VOCAB as DEBUG_VOCAB
 from generator.metaprog.types import Void
 from generator.obj.contracts.prefix_data import PrefixData
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 from generator.config.rules.dev.database import DB as DATABASE_CONFIG
-import generator.config.rules.dev.generator as DEV
+import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
+import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.builders.generator as generator_config_builder
 import generator.config.builders.database as database_config_builder
 import generator.config.validator as config_validator
@@ -66,12 +67,12 @@ def _do_generate_range(r: range, block_len: int, magnitude: int, cur_op_code: st
             cur_phone_number: str = prefix + cur_phone_number_suffix
             database.save_phone_number(cur_phone_number, country_code,
                                  cur_op_code, cur_phone_number_suffix)
-            if DEV.DEBUG_MODE:
-                DebugLogger("GENERATED_PHONE_NUMBER", cur_phone_number)
-"""             else:
-                cur_phone_number: str = prefix + cur_phone_number_suffix
-                print(f"Rejected: {cur_phone_number}")
-"""
+            if DEV_CONFIG.DEBUG_MODE:
+                debug_logger("GENERATED_PHONE_NUMBER", cur_phone_number)
+        elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
+            cur_phone_number: str = prefix + cur_phone_number_suffix
+            debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
+
 
 
 def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optional[dict]):
@@ -125,15 +126,15 @@ def _run_phone_numbers_generator() -> Void:
         print(DEBUG_VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
         return
 
-    if DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE:
-        prefix_data.force_op_codes(DEV.FORCED_OPERATOR_CODES)
+    if DEV_CONFIG.FORCED_OPERATOR_CODES and DEV_CONFIG.UNSAFE:
+        prefix_data.force_op_codes(DEV_CONFIG.FORCED_OPERATOR_CODES)
     else:
-        if not DEV.DISABLE_SMART_RELOAD:
+        if not DEV_CONFIG.DISABLE_SMART_RELOAD:
             smart_reload.slice_op_codes(reload_metas, prefix_data)
 
     _do_generate(prefix_data, reload_metas)
     database.append_finite_collection_indicator()
-    if DEV.DEBUG_MODE:
+    if DEV_CONFIG.DEBUG_MODE:
         print(DEBUG_VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])
 
 

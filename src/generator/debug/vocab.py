@@ -12,7 +12,8 @@ VOCAB = {
     "ERROR_MSG": {},
 
     "DEBUG_MSG": {
-        "GENERATED_PHONE_NUMBER": "Generated phone number"
+        "GENERATED_PHONE_NUMBER": "Generated phone number",
+        "REJECTED_PHONE_NUMBER": "Rejected phone number"
     },
 
     "DEBUG_PREFIX": "[DEBUG]"
