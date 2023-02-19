@@ -78,9 +78,11 @@ def _compute_last_iter(ndigits: int, op_code: str) -> int:
 
     if trail_len > 0:
         current_digit = 9
-        trail_elements = [8]
 
-        while (trail_len > 1):
+        trail_elements = [8]
+        trail_len -= 1
+
+        while (trail_len > 0):
             current_digit_in_trail_occurrences: int = trail_elements.count(current_digit);
             current_digit_in_head_occurrences: int = head.count(str(current_digit))
             total_cur_digit: int = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
