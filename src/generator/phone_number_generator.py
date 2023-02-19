@@ -31,6 +31,8 @@ def _reject_phone_number_suffix(op_code: str, phone_number_suffix: str) -> bool:
         return True
 
     for banned_pattern in banned_op_codes:
+        if banned_pattern == '':
+            break
         if whole_phone_number.startswith(banned_pattern):
             return True
 
