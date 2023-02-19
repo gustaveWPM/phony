@@ -87,7 +87,12 @@ def _check_consecutive_same_digit_threshold(config: dict) -> Void:
         terminate(f"{_MSG_PREFIX} Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be less than or equal to SAME_DIGIT_THRESHOLD")
 
 
-def check_targeted_country(country: str) -> Void:
+def on_build_check_target_options(options: dict) -> Void:
+    if not options["DESK"] and not options["MOBILE"]:
+        terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'MOBILE' are both setted to False.")
+
+
+def on_build_check_targeted_country(country: str) -> Void:
     if not countries_service.is_valid_country(country):
         terminate(f"{_MSG_PREFIX} Unknown country key value: {country}.")
 

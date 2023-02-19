@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from generator.metaprog.types import Void
-from generator.config.validator import check_targeted_country
+from generator.config.validator import on_build_check_targeted_country, on_build_check_target_options
 import generator.obj.services.countries as countries_service
 from generator.obj.contracts.prefix_data import PrefixData
 from generator.config.rules.countries import COUNTRIES
@@ -17,8 +17,7 @@ def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
 
 
 def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
-    if not options["DESK"] and not options["MOBILE"]:
-        raise ValueError("Invalid configuration: 'DESK' and 'MOBILE' are both setted to False.")
+    on_build_check_target_options(options)
 
     operator_desk_codes: List[str] = []
     operator_mobile_codes: List[str] = []
@@ -38,7 +37,7 @@ def _generate_prefix_data(target: dict) -> PrefixData:
     country: str = target["COUNTRY"]
     options: dict = target["OPTIONS"]
 
-    check_targeted_country(country)
+    on_build_check_targeted_country(country)
     return _do_generate_prefix_data(country, options)
 
 
