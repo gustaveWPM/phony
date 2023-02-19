@@ -7,8 +7,3 @@ DB: dict = {
 
     "MONGO_DB_TABLE": "{BUILDER}"
 }
-
-
-# * ... Build on import (AVOID to import this twice!)
-import generator.config.builders.database as builder
-builder.append_dynamic_conf(DB)

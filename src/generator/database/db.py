@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from generator.metaprog.aliases import Void
+from generator.metaprog.types import Void
 from generator.config.rules.dev.database import DB as CONF
 import pymongo
 from typing import Optional
@@ -41,7 +41,7 @@ def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
 
 
 def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
-    if (DISABLE_PERSISTENCE):
+    if DISABLE_PERSISTENCE:
         return
     database_entry: dict = {
         "phone_number": phone_number,
@@ -55,10 +55,10 @@ def save_phone_number(phone_number: str, country_code: str, operator_code: str, 
 
 
 def retrieve_last_saved_phone_metadatas() -> Optional[dict]:
-    if (DISABLE_PERSISTENCE):
+    if DISABLE_PERSISTENCE:
         return None
     entry: Optional[dict] = _retrieve_last_saved_phone_number_entry()
-    if (entry is None):
+    if entry is None:
         return None
     metadatas: dict = {}
     metadatas["phone_number_suffix"] = _retrieve_last_saved_phone_number_suffix(
@@ -76,6 +76,6 @@ def append_finite_collection_indicator() -> Void:
 
 def is_finite_collection(data: dict) -> bool:
     for key in data:
-        if (data[key] != "-1"):
+        if data[key] != "-1":
             return False
     return True

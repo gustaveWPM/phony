@@ -2,9 +2,10 @@
 
 import generator.config.rules.dev.generator as DEV
 from typing import Optional, List
-from generator.config.rules.absolute_getters.generator import get_ndigits
+from generator.config.absolute_getters.generator import get_ndigits
 from generator.internal_lib.list import reverse, list_to_str
 from generator.config.rules.generator import GENERATOR as CONF
+from generator.sys.terminate import terminate
 
 
 def compute_range_len(op_code: str) -> int:
@@ -14,42 +15,43 @@ def compute_range_len(op_code: str) -> int:
 
 
 def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: int) -> int:
-    first_iteration: int = 0
+    range_start: int = 0
     head_max_zeros = CONF["HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
-    if (DEV.FORCED_FIRST_ITERATION >= 0 and DEV.UNSAFE):
-        first_iteration = DEV.FORCED_FIRST_ITERATION
-        return first_iteration
+    if DEV.FORCED_RANGE_START >= 0 and DEV.UNSAFE:
+        range_start = DEV.FORCED_RANGE_START
+        return range_start
 
-    if (DEV.DISABLE_SMART_RELOAD):
-        first_iteration = 0
-        return first_iteration
+    if DEV.DISABLE_SMART_RELOAD:
+        range_start = 0
+        return range_start
 
-    if (metadatas is not None):
-        first_iteration = int(metadatas["phone_number_suffix"]) + 1
-        return first_iteration
+    if metadatas is not None:
+        range_start = int(metadatas["phone_number_suffix"]) + 1
+        return range_start
 
-    if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
-        first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
-        return first_iteration
+    if DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE:
+        range_start = int(DEV.FORCED_VERY_FIRST_ITERATION)
+        return range_start
 
-    if (head_max_zeros >= block_len):
+    if head_max_zeros >= block_len:
         return -1
     pos: int = head_max_zeros
     str_base = '0' * block_len
-    first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
-    first_iteration = int(first_iteration_str)
+    range_start_str = str_base[:pos] + '1' + str_base[pos + 1:]
+    range_start = int(range_start_str)
 
-    if (head_max_zeros == 0 and first_iteration < magnitude):
-        first_iteration = magnitude
+    if head_max_zeros == 0 and range_start < magnitude:
+        range_start = magnitude
 
-    return first_iteration
+    return range_start
 
 
-def _do_compute_last_iter_tail(
+def _do_compute_range_end_tail(
     trail_len: int,
     head: str,
+    head_appended_nines: str,
     same_digit_threshold: int
 ) -> int:
     trail: str = ''
@@ -62,18 +64,18 @@ def _do_compute_last_iter_tail(
         current_digit_in_head_occurrences: int = head.count(str(current_digit))
         total_cur_digit: int = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
         
-        if (total_cur_digit >= same_digit_threshold):
+        if total_cur_digit >= same_digit_threshold:
             current_digit -= 1
             if current_digit < 0:
-                raise RuntimeError("You're not funny at all! Do you even know what you are doing with the config files?")
+                terminate("You're not funny at all! Do you even know what you are doing with the config files?")
             continue
 
         trail_elements.append(current_digit)
         trail_len -= 1
     trail = list_to_str(trail_elements)
-    last_iter_str: str = head + trail
-    last_iteration = int(last_iter_str) + 1
-    return last_iteration
+    range_end_str: str = head_appended_nines + trail
+    range_end = int(range_end_str) + 1
+    return range_end
 
 
 def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
@@ -81,7 +83,7 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
     consecutive_nines_at_op_code_tail: int = 0
 
     for c in rev_op_code:
-        if (c == '9'):
+        if c == '9':
             consecutive_nines_at_op_code_tail += 1
         else:
             break
@@ -89,8 +91,8 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
     return consecutive_nines_at_op_code_tail
 
 
-def _do_compute_last_iter(op_code: str, block_len: int) -> int:
-    last_iteration: int = -1
+def _do_compute_range_end(op_code: str, block_len: int) -> int:
+    range_end: int = -1
     same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
@@ -98,32 +100,32 @@ def _do_compute_last_iter(op_code: str, block_len: int) -> int:
 
     # {ToDo} Move (and enhance to fit all digit cases) this logic in the validator
     if consecutive_nines_at_op_code_tail > same_consecutive_digit_threshold:
-        raise ValueError(f"Too much '9' at the tail of your op code ({op_code}). Check your CONSECUTIVE_SAME_DIGIT_THRESHOLD in your fine-tune config ({same_consecutive_digit_threshold}).")
+        terminate(f"Too much '9' at the tail of your op code ({op_code}). Check your CONSECUTIVE_SAME_DIGIT_THRESHOLD in your fine-tune config ({same_consecutive_digit_threshold}).")
 
     head_appended_nines: str = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
     head: str = op_code + head_appended_nines
     trail_len: int = block_len - len(head_appended_nines)
 
     if trail_len > 0:
-        last_iteration = _do_compute_last_iter_tail(trail_len, head, same_digit_threshold)
-    return last_iteration
+        range_end = _do_compute_range_end_tail(trail_len, head, head_appended_nines, same_digit_threshold)
+    return range_end
 
 
 def compute_range_end(ndigits: int, op_code: str) -> int:
-    last_iteration: int = 0
+    range_end: int = 0
     block_len: int = compute_range_len(op_code)
 
     # {ToDo} Move this logic in the validator
     if block_len < 0:
-        raise ValueError(f"Bigger operator code len ({op_code}) than NDIGITS ({ndigits}).")
+        terminate(f"Bigger operator code len ({op_code}) than NDIGITS ({ndigits}).")
 
-    if (DEV.FORCED_LAST_ITERATION >= 0 and DEV.UNSAFE):
-        last_iteration = DEV.FORCED_LAST_ITERATION
-        return last_iteration
+    if DEV.FORCED_RANGE_END >= 0 and DEV.UNSAFE:
+        range_end = DEV.FORCED_RANGE_END
+        return range_end
 
     if block_len == 0:
-        last_iteration = int(op_code) + 1
-        return last_iteration
+        range_end = int(op_code) + 1
+        return range_end
 
-    last_iteration = _do_compute_last_iter(op_code, block_len)
-    return last_iteration
+    range_end = _do_compute_range_end(op_code, block_len)
+    return range_end

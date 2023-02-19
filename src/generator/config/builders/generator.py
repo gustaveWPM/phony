@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from generator.metaprog.aliases import Void
+from generator.metaprog.types import Void
 from generator.config.validator import check_targeted_country
 import generator.obj.services.countries as countries_service
 from generator.obj.contracts.prefix_data import PrefixData

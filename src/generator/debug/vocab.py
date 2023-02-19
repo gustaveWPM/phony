@@ -1,3 +1,5 @@
+# coding: utf-8
+
 VOCAB = {
     "SUCCESS_MSG": {
         "REACHED_FINAL_EXIT_POINT": "Mission Complete!"

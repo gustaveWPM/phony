@@ -1,42 +1,52 @@
 # coding: utf-8
 
-from generator.metaprog.logger import debug_logger as DebugLogger
-from generator.metaprog.vocab import VOCAB
-from generator.metaprog.aliases import Void
+from generator.debug.logger import debug_logger as DebugLogger
+from generator.debug.vocab import VOCAB as DEBUG_VOCAB
+from generator.metaprog.types import Void
 from generator.obj.contracts.prefix_data import PrefixData
+from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
+from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 import generator.config.rules.dev.generator as DEV
-from generator.config.rules.generator import GENERATOR as CONF
-import generator.config.builders.generator as builder
+import generator.config.builders.generator as generator_config_builder
+import generator.config.builders.database as database_config_builder
 import generator.config.validator as config_validator
-import generator.database.db as db
-import generator.limits.phone_range_limit as Limit
-from typing import Optional, List
+import generator.database.db as database
+import generator.phone_range_limit as limit
 import generator.smart_reload as SmartReload
+
+from typing import Optional, List
 
 
 def _reject_phone_number_suffix(op_code: str, phone_number_suffix: str) -> bool:
-    head_max_zeros: int = CONF["HEAD_MAX_ZEROS"]
-    same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
-    same_consecutive_digit_threshold: int = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
+    head_max_zeros: int = GENERATOR_CONFIG["HEAD_MAX_ZEROS"]
+    same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
+    same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
     digits: str = "0123456789"
     whole_phone_number: str = op_code + phone_number_suffix
-    pattern: str = ''
+    banned_pattern: str = ''
+    banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
 
-    if (phone_number_suffix.startswith('0' * (head_max_zeros + 1))):
+    banned_pattern = '0' * (head_max_zeros + 1)
+    if phone_number_suffix.startswith(banned_pattern):
         return True
-    for digit in digits:
-        if (whole_phone_number.count(digit) > same_digit_threshold):
+
+    for banned_pattern in banned_op_codes:
+        if whole_phone_number.startswith(banned_pattern):
             return True
-        if (same_consecutive_digit_threshold > 0):
-            pattern = digit * (same_consecutive_digit_threshold + 1)
-            if pattern in whole_phone_number:
+
+    for digit in digits:
+        if whole_phone_number.count(digit) > same_digit_threshold:
+            return True
+        if same_consecutive_digit_threshold > 0:
+            banned_pattern = digit * (same_consecutive_digit_threshold + 1)
+            if banned_pattern in whole_phone_number:
                 return True
     return False
 
 
 def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
     number_as_string: str = str(number)
-    if (number >= magnitude):
+    if number >= magnitude:
         return number_as_string
     number_len: int = len(number_as_string)
     number_of_zeros_to_append: int = abs(ndigits - number_len)
@@ -50,11 +60,11 @@ def _do_generate_range(r: range, block_len: int, magnitude: int, cur_op_code: st
     for current_iteration in r:
         cur_phone_number_suffix: str = _append_heading_zeros(
             current_iteration, block_len, magnitude)
-        if (not _reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix)):
+        if not _reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
             cur_phone_number: str = prefix + cur_phone_number_suffix
-            db.save_phone_number(cur_phone_number, country_code,
+            database.save_phone_number(cur_phone_number, country_code,
                                  cur_op_code, cur_phone_number_suffix)
-            if (DEV.DEBUG_MODE):
+            if DEV.DEBUG_MODE:
                 DebugLogger("GENERATED_PHONE_NUMBER", cur_phone_number)
 """             else:
                 cur_phone_number: str = prefix + cur_phone_number_suffix
@@ -63,13 +73,13 @@ def _do_generate_range(r: range, block_len: int, magnitude: int, cur_op_code: st
 
 
 def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optional[dict]):
-    ndigits: int = CONF["NDIGITS"]
+    ndigits: int = GENERATOR_CONFIG["NDIGITS"]
 
     for cur_op_code in op_codes:
-        block_len: int = Limit.compute_range_len(cur_op_code)
+        block_len: int = limit.compute_range_len(cur_op_code)
         magnitude: int = 10 ** (block_len - 1)
-        last_iteration: int = Limit.compute_range_end(ndigits, cur_op_code)
-        first_iteration: int = Limit.compute_range_start(metadatas, cur_op_code, magnitude)
+        last_iteration: int = limit.compute_range_end(ndigits, cur_op_code)
+        first_iteration: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
 
         if first_iteration == -1 or last_iteration == -1:
             break
@@ -95,34 +105,36 @@ def _do_generate(prefix_data: PrefixData, metadatas: dict) -> Void:
 
 
 def _skip_generation(data: Optional[dict]) -> bool:
-    if (data is None):
+    if data is None:
         return False
-    return db.is_finite_collection(data)
+    return database.is_finite_collection(data)
 
 
-def build_generator_config() -> Void:
-    builder.append_dynamic_conf(CONF)
+def build_config() -> Void:
+    database_config_builder.append_dynamic_conf(DATABASE_CONFIG)
+    generator_config_builder.append_dynamic_conf(GENERATOR_CONFIG)
 
 
 def _run_phone_numbers_generator() -> Void:
-    prefix_data: PrefixData = CONF["PREFIX_DATA"]
-    reload_metas: dict = db.retrieve_last_saved_phone_metadatas()
+    prefix_data: PrefixData = GENERATOR_CONFIG["PREFIX_DATA"]
+    reload_metas: dict = database.retrieve_last_saved_phone_metadatas()
 
-    if (_skip_generation(reload_metas)):
-        print(VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
+    if _skip_generation(reload_metas):
+        print(DEBUG_VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"])
         return
 
-    if (DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE):
+    if DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE:
         prefix_data.force_op_codes(DEV.FORCED_OPERATOR_CODES)
     else:
         SmartReload.slice_op_codes(reload_metas, prefix_data)
 
     _do_generate(prefix_data, reload_metas)
-    db.append_finite_collection_indicator()
-    print(VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])
+    database.append_finite_collection_indicator()
+    if DEV.DEBUG_MODE:
+        print(DEBUG_VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])
 
 
 def run() -> Void:
-    build_generator_config()
-    config_validator.check_config(CONF)
+    build_config()
+    config_validator.check_config(GENERATOR_CONFIG)
     _run_phone_numbers_generator()

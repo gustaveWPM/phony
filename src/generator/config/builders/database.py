@@ -1,7 +1,8 @@
 # coding: utf-8
 
-from generator.config.rules.absolute_getters.generator import get_targeted_country
-from generator.metaprog.aliases import Void
+from generator.config.absolute_getters.generator import get_targeted_country
+from generator.metaprog.types import Void
+
 
 def append_dynamic_conf(conf: dict) -> Void:
     country = get_targeted_country()

@@ -2,11 +2,11 @@
 
 from typing import Optional, List
 from generator.obj.contracts.prefix_data import PrefixData
-from generator.metaprog.aliases import Void
+from generator.metaprog.types import Void
 
 
 def slice_op_codes(metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
-    if (metadatas is None):
+    if metadatas is None:
         return
     needle: str = metadatas["phone_number_op_code"]
 
