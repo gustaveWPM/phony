@@ -19,20 +19,16 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
     head_max_zeros = GENERATOR_CONFIG["HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
+    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION_VALUE and DEV_CONFIG.UNSAFE:
+        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION)
+        return range_start
+
     if DEV_CONFIG.FORCED_RANGE_START >= 0 and DEV_CONFIG.UNSAFE:
         range_start = DEV_CONFIG.FORCED_RANGE_START
         return range_start
 
-    if DEV_CONFIG.DISABLE_SMART_RELOAD:
-        range_start = 0
-        return range_start
-
-    if metadatas is not None:
+    if metadatas is not None and not DEV_CONFIG.DISABLE_SMART_RELOAD:
         range_start = int(metadatas["phone_number_suffix"]) + 1
-        return range_start
-
-    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION_VALUE and DEV_CONFIG.UNSAFE:
-        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION)
         return range_start
 
     if head_max_zeros >= block_len:
