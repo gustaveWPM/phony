@@ -83,10 +83,6 @@ def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optiona
         magnitude: int = 10 ** (block_len - 1)
         last_iteration: int = limit.compute_range_end(ndigits, cur_op_code)
         first_iteration: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
-
-        if first_iteration == -1 or last_iteration == -1:
-            break
-
         r = range(first_iteration, last_iteration)
         _do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
 

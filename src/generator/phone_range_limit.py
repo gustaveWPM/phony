@@ -32,7 +32,8 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
         return range_start
 
     if head_max_zeros >= block_len:
-        return -1
+        return 0
+
     pos: int = head_max_zeros
     str_base = '0' * block_len
     range_start_str = str_base[:pos] + '1' + str_base[pos + 1:]
@@ -88,7 +89,7 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
 
 
 def _do_compute_range_end(op_code: str, block_len: int) -> int:
-    range_end: int = -1
+    range_end: int = 0
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
