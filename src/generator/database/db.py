@@ -1,16 +1,16 @@
 # coding: utf-8
 
 from generator.metaprog.types import Void
-from generator.config.rules.dev.database import DB as CONF
+from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 import pymongo
 from typing import Optional
 
-DISABLE_PERSISTENCE = CONF["DISABLE_PERSISTENCE"]
+DISABLE_PERSISTENCE = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
 
-MONGO_CLIENT = pymongo.MongoClient(CONF["MONGO_DB_CONNECTION_URI"])
+MONGO_CLIENT = pymongo.MongoClient(DATABASE_CONFIG["MONGO_DB_CONNECTION_URI"])
 
-DB_NAME_KEY = CONF["MONGO_DB_NAME"]
-DB_TABLE_KEY = CONF["MONGO_DB_TABLE"]
+DB_NAME_KEY = DATABASE_CONFIG["MONGO_DB_NAME"]
+DB_TABLE_KEY = DATABASE_CONFIG["MONGO_DB_TABLE"]
 
 DB = MONGO_CLIENT[DB_NAME_KEY]
 DB_TABLE = DB[DB_TABLE_KEY]

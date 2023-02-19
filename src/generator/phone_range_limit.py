@@ -1,10 +1,10 @@
 # coding: utf-8
 
-import generator.config.rules.dev.generator as DEV
+import generator.config.rules.dev.generator as DEV_CONFIG
 from typing import Optional, List
 from generator.config.absolute_getters.generator import get_ndigits
 from generator.internal_lib.list import reverse, list_to_str
-from generator.config.rules.generator import GENERATOR as CONF
+from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 from generator.sys.terminate import terminate
 
 
@@ -16,14 +16,14 @@ def compute_range_len(op_code: str) -> int:
 
 def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: int) -> int:
     range_start: int = 0
-    head_max_zeros = CONF["HEAD_MAX_ZEROS"]
+    head_max_zeros = GENERATOR_CONFIG["HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
-    if DEV.FORCED_RANGE_START >= 0 and DEV.UNSAFE:
-        range_start = DEV.FORCED_RANGE_START
+    if DEV_CONFIG.FORCED_RANGE_START >= 0 and DEV_CONFIG.UNSAFE:
+        range_start = DEV_CONFIG.FORCED_RANGE_START
         return range_start
 
-    if DEV.DISABLE_SMART_RELOAD:
+    if DEV_CONFIG.DISABLE_SMART_RELOAD:
         range_start = 0
         return range_start
 
@@ -31,8 +31,8 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
         range_start = int(metadatas["phone_number_suffix"]) + 1
         return range_start
 
-    if DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE:
-        range_start = int(DEV.FORCED_VERY_FIRST_ITERATION)
+    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION_VALUE and DEV_CONFIG.UNSAFE:
+        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION)
         return range_start
 
     if head_max_zeros >= block_len:
@@ -93,8 +93,8 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
 
 def _do_compute_range_end(op_code: str, block_len: int) -> int:
     range_end: int = -1
-    same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
-    same_consecutive_digit_threshold: int = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
+    same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
+    same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
     consecutive_nines_at_op_code_tail: int = _do_compute_consecutive_nines_at_op_code_tail(op_code)
 
@@ -119,8 +119,8 @@ def compute_range_end(ndigits: int, op_code: str) -> int:
     if block_len < 0:
         terminate(f"Bigger operator code len ({op_code}) than NDIGITS ({ndigits}).")
 
-    if DEV.FORCED_RANGE_END >= 0 and DEV.UNSAFE:
-        range_end = DEV.FORCED_RANGE_END
+    if DEV_CONFIG.FORCED_RANGE_END >= 0 and DEV_CONFIG.UNSAFE:
+        range_end = DEV_CONFIG.FORCED_RANGE_END
         return range_end
 
     if block_len == 0:
