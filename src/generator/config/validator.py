@@ -1,6 +1,7 @@
 # coding: utf-8
 
-from metaprog.aliases import *
+from generator.metaprog.aliases import Void
+import generator.obj.services.countries as countries_service
 
 def _do_check_ndigit(config: dict) -> Void:
     if (config["NDIGITS"] < config["SAME_DIGIT_THRESHOLD"]):
@@ -34,6 +35,11 @@ def _do_check_consecutive_same_digit_threshold(config: dict) -> Void:
     if (config["CONSECUTIVE_SAME_DIGIT_THRESHOLD"] > config["SAME_DIGIT_THRESHOLD"]):
         raise ValueError(
             "Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be less than or equal to SAME_DIGIT_THRESHOLD")
+
+
+def check_targeted_country(country: str) -> Void:
+    if not countries_service.is_valid_country(country):
+        raise ValueError(f"Unknown country key value: {country}.")
 
 
 def check_config(config: dict) -> Void:

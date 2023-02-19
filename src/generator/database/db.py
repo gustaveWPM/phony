@@ -1,9 +1,9 @@
 # coding: utf-8
 
+from generator.metaprog.aliases import Void
+from generator.config.rules.dev.database import DB as CONF
 import pymongo
 from typing import Optional
-from metaprog.aliases import Void
-from config.rules.dev.database import DB as CONF
 
 DISABLE_PERSISTENCE = CONF["DISABLE_PERSISTENCE"]
 

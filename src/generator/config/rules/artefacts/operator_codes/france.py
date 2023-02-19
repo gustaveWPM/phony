@@ -1,9 +1,9 @@
 # coding: utf-8
 
-import internal_lib.list as MyListLib
+from generator.internal_lib.list import uniq
 
 OPERATORS_CODES: dict = {
-    "MOBILE": MyListLib.uniq([
+    "MOBILE": uniq([
         "699", "698", "695", "68", "67", "6699", "6698", "669", "668", "666", "667", "665", "663",
         "664", "660", "661", "662", "659", "658", "6567", "6568", "6449", "6448", "6447", "6440",
         "6419", "6418", "6415", "6414", "6413", "6412", "6411", "6410", "65666", "65667", "65668",
@@ -35,18 +35,7 @@ OPERATORS_CODES: dict = {
         "75001", "75002", "75003", "75004", "75005", "75006", "75000", "749", "740", "741", "742"
     ]),
 
-    "DESK": MyListLib.uniq(
+    "DESK": uniq(
         ["1", "2", "3", "4", "5"]
     )
-}
-
-FINE_TUNING: dict = {
-    # * ... Number of digits in the complete phone suffix, operator code included
-    "NDIGITS": 9,
-    # * ... Maximum same digit amount in the generated block
-    "SAME_DIGIT_THRESHOLD": 5,
-    # * ... Maximum consecutive same digit amount anywhere in the generated block
-    "CONSECUTIVE_SAME_DIGIT_THRESHOLD": 4,
-    # * ... Maximum consecutive 0 amount in the beginning of the generated block
-    "HEAD_MAX_ZEROS": 1
 }

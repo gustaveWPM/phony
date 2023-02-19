@@ -9,8 +9,6 @@ DB: dict = {
 }
 
 
-#================================================
-
-
-import config.builders.database as builder
+# * ... Build on import (AVOID to import this twice!)
+import generator.config.builders.database as builder
 builder.append_dynamic_conf(DB)

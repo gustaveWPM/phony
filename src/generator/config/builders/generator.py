@@ -1,10 +1,11 @@
 # coding: utf-8
 
-from metaprog.aliases import Void
+from generator.metaprog.aliases import Void
+from generator.config.validator import check_targeted_country
+import generator.obj.services.countries as countries_service
+from generator.obj.contracts.prefix_data import PrefixData
+from generator.config.rules.countries import COUNTRIES
 from typing import List
-import obj.services.countries as countries_service
-from obj.contracts.prefix_data import PrefixData
-from config.rules.countries import COUNTRIES
 
 
 def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
@@ -37,9 +38,7 @@ def _generate_prefix_data(target: dict) -> PrefixData:
     country: str = target["COUNTRY"]
     options: dict = target["OPTIONS"]
 
-    if not countries_service.is_valid_country(country):
-        raise ValueError(f"Unknown country key value: {country}.")
-
+    check_targeted_country(country)
     return _do_generate_prefix_data(country, options)
 
 
