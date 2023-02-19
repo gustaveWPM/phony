@@ -57,11 +57,6 @@ def _compute_last_iter(ndigits: int, op_code: str) -> int:
         last_iteration = int(op_code) + 1
         return last_iteration
 
-    # {ToDo} Compute this correctly
-    # The max iteration should be like [06] 999...000...
-    # with consecutive '9' max of CONSECUTIVE SAME DIGIT,
-    # then +1 it and you're ready to go!
-
     rev_op_code = op_code[::-1]
     consecutive_nines_at_op_code_tail: int = 0
 
@@ -99,13 +94,14 @@ def _compute_first_iter(metadatas: Optional[dict], ndigits: int, max_head_zeros:
 
     if (DEV.FORCE_VERY_FIRST_ITERATION_VALUE and DEV.UNSAFE):
         first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
-    else:
-        if (max_head_zeros >= ndigits):
-            return -1
-        pos: int = max_head_zeros
-        str_base = '0' * ndigits
-        first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
-        first_iteration = int(first_iteration_str)
+        return first_iteration
+
+    if (max_head_zeros >= ndigits):
+        return -1
+    pos: int = max_head_zeros
+    str_base = '0' * ndigits
+    first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
+    first_iteration = int(first_iteration_str)
     return first_iteration
 
 
