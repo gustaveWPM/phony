@@ -8,7 +8,7 @@ from generator.sys.terminate import terminate
 def _do_check_ndigit(config: dict) -> Void:
     if config["NDIGITS"] < config["SAME_DIGIT_THRESHOLD"]:
         terminate("Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
-    if config["NDIGITS"] < config["HEAD_MAX_ZEROS"]:
+    if config["NDIGITS"] < config["LAST_BLOCK_HEAD_MAX_ZEROS"]:
         terminate("Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS")
     if config["NDIGITS"] <= 0:
         terminate("Invalid configuration: NDIGITS should be a positive value, greater than 0")
@@ -20,7 +20,7 @@ def _do_check_same_digit_threshold(config: dict) -> Void:
 
 
 def _do_check_head_max_zeros(config: dict) -> Void:
-    if config["HEAD_MAX_ZEROS"] < 0:
+    if config["LAST_BLOCK_HEAD_MAX_ZEROS"] < 0:
         terminate("Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
 
 

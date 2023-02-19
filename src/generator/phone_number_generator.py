@@ -19,7 +19,7 @@ from typing import Optional, List
 
 
 def _reject_phone_number_suffix(op_code: str, phone_number_suffix: str) -> bool:
-    head_max_zeros: int = GENERATOR_CONFIG["HEAD_MAX_ZEROS"]
+    last_block_head_max_zeros: int = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
     digits: str = "0123456789"
@@ -27,7 +27,7 @@ def _reject_phone_number_suffix(op_code: str, phone_number_suffix: str) -> bool:
     banned_pattern: str = ''
     banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
 
-    banned_pattern = '0' * (head_max_zeros + 1)
+    banned_pattern = '0' * (last_block_head_max_zeros + 1)
     if phone_number_suffix.startswith(banned_pattern):
         return True
 

@@ -16,7 +16,7 @@ def compute_range_len(op_code: str) -> int:
 
 def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: int) -> int:
     range_start: int = 0
-    head_max_zeros = GENERATOR_CONFIG["HEAD_MAX_ZEROS"]
+    last_block_head_max_zeros = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
     if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION_VALUE and DEV_CONFIG.UNSAFE:
@@ -31,15 +31,15 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
         range_start = int(metadatas["phone_number_suffix"]) + 1
         return range_start
 
-    if head_max_zeros >= block_len:
+    if last_block_head_max_zeros >= block_len:
         return 0
 
-    pos: int = head_max_zeros
+    pos: int = last_block_head_max_zeros
     str_base = '0' * block_len
     range_start_str = str_base[:pos] + '1' + str_base[pos + 1:]
     range_start = int(range_start_str)
 
-    if head_max_zeros == 0 and range_start < magnitude:
+    if last_block_head_max_zeros == 0 and range_start < magnitude:
         range_start = magnitude
 
     return range_start
