@@ -14,7 +14,12 @@ This is probably not the most rigorous way to achieve the sake of this project.
     - i18n configuration template
     - Country code
     - Operator codes
-    - Fine-tuning rules for the generation of the pseudo-random tail element
+    - Fine-tuning rules:
+        - Phone number length
+        - Same digit threshold
+        - Consecutive same digit threshold
+        - Max heading zeros (at the beginning of the pseudo-randomly generated block)
+        - Banned operator codes
 
 ## How to run
 
