@@ -41,9 +41,11 @@ def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
     return phone_suffix
 
 
+# {ToDo} Refactor this (hhhrrrnnnggllllhhh)
 def _compute_last_iter(ndigits: int, op_code: str) -> int:
     last_iteration: int = 0
     computed_ndigits: int = ndigits - len(op_code)
+    same_consecutive_digit_threshold: int = CONF["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
     same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
 
     if computed_ndigits < 0:
@@ -66,12 +68,32 @@ def _compute_last_iter(ndigits: int, op_code: str) -> int:
         else:
             break
 
-    if consecutive_nines_at_op_code_tail > same_digit_threshold:
-        raise ValueError(f"Too much '9' at the tail of your op code ({op_code}). Check your SAME_DIGIT_THRESHOLD in your fine-tune config ({same_digit_threshold}).")
+    if consecutive_nines_at_op_code_tail > same_consecutive_digit_threshold:
+        raise ValueError(f"Too much '9' at the tail of your op code ({op_code}). Check your CONSECUTIVE_SAME_DIGIT_THRESHOLD in your fine-tune config ({same_consecutive_digit_threshold}).")
 
-    head_nines: str = '9' * (same_digit_threshold - consecutive_nines_at_op_code_tail)
-    trailing_zeros: str = '0' * (computed_ndigits - len(head_nines))
-    last_iter_str: str = head_nines + trailing_zeros
+    head_appended_nines: str = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
+    head = op_code + head_appended_nines
+    trail: str = ''
+    trail_len: int = computed_ndigits - len(head_appended_nines)
+
+    if trail_len > 0:
+        current_digit = 9
+        trail_elements = [8]
+
+        while (trail_len > 1):
+            current_digit_in_trail_occurrences: int = trail_elements.count(current_digit);
+            current_digit_in_head_occurrences: int = head.count(str(current_digit))
+            total_cur_digit: int = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
+            if (total_cur_digit >= same_digit_threshold):
+                current_digit -= 1
+                if current_digit < 0:
+                    raise RuntimeError("You're not funny at all! Do you even know what you are doing with the config files?")
+                continue
+            trail_elements.append(current_digit)
+            trail_len -= 1
+        trail_elements_to_s_list = [str(c) for c in trail_elements]
+        suffix = ''.join(trail_elements_to_s_list)
+        last_iter_str: str = head_appended_nines + trail + suffix
 
     last_iteration = int(last_iter_str) + 1
     return last_iteration

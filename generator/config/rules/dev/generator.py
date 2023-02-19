@@ -1,6 +1,6 @@
 # coding: utf-8
 
-DEBUG_MODE: bool = True                    # * ... Default value is `False`
+DEBUG_MODE: bool = False                    # * ... Default value is `False`
 
 UNSAFE: bool = False                        # * ... Default value is `False`
 DISABLE_SMART_RELOAD: bool = False          # * ... Default value is `False`
