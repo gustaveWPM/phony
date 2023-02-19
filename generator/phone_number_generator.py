@@ -41,17 +41,45 @@ def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
     return phone_suffix
 
 
-def _compute_max_iter(ndigits: int, op_code: str) -> int:
-    max_iteration: int = 0
+def _compute_last_iter(ndigits: int, op_code: str) -> int:
+    last_iteration: int = 0
     computed_ndigits: int = ndigits - len(op_code)
+    same_digit_threshold: int = CONF["SAME_DIGIT_THRESHOLD"]
 
-    if (DEV.FORCED_MAX_ITERATION >= 0 and DEV.UNSAFE):
-        max_iteration = DEV.FORCED_MAX_ITERATION
-    else:
-        t: int = CONF["SAME_DIGIT_THRESHOLD"]
-        n: int = computed_ndigits
-        max_iteration = int('9' * (t + 1) + '0' * abs(n - t)) // 10 + 1
-    return max_iteration
+    if computed_ndigits < 0:
+        raise ValueError(f"Bigger operator code len ({op_code}) than NDIGITS ({ndigits}).")
+
+    if (DEV.FORCED_LAST_ITERATION >= 0 and DEV.UNSAFE):
+        last_iteration = DEV.FORCED_LAST_ITERATION
+        return last_iteration
+
+    if computed_ndigits == 0:
+        last_iteration = int(op_code) + 1
+        return last_iteration
+
+    # {ToDo} Compute this correctly
+    # The max iteration should be like [06] 999...000...
+    # with consecutive '9' max of CONSECUTIVE SAME DIGIT,
+    # then +1 it and you're ready to go!
+
+    rev_op_code = op_code[::-1]
+    consecutive_nines_at_op_code_tail: int = 0
+
+    for c in rev_op_code:
+        if (c == '9'):
+            consecutive_nines_at_op_code_tail += 1
+        else:
+            break
+
+    if consecutive_nines_at_op_code_tail > same_digit_threshold:
+        raise ValueError(f"Too much '9' at the tail of your op code ({op_code}). Check your SAME_DIGIT_THRESHOLD in your fine-tune config ({same_digit_threshold}).")
+
+    head_nines: str = '9' * (same_digit_threshold - consecutive_nines_at_op_code_tail)
+    trailing_zeros: str = '0' * (computed_ndigits - len(head_nines))
+    last_iter_str: str = head_nines + trailing_zeros
+
+    last_iteration = int(last_iter_str) + 1
+    return last_iteration
 
 
 def _compute_first_iter(metadatas: Optional[dict], ndigits: int, max_head_zeros: int) -> int:
@@ -73,7 +101,7 @@ def _compute_first_iter(metadatas: Optional[dict], ndigits: int, max_head_zeros:
         first_iteration = int(DEV.FORCED_VERY_FIRST_ITERATION)
     else:
         if (max_head_zeros >= ndigits):
-            return first_iteration
+            return -1
         pos: int = max_head_zeros
         str_base = '0' * ndigits
         first_iteration_str = str_base[:pos] + '1' + str_base[pos + 1:]
@@ -91,13 +119,16 @@ def _do_generate_loop(ndigits: int, prefix_data: PrefixData, op_codes: List[str]
         prefix: str = country_code + cur_operator_code
         computed_ndigits: int = ndigits - len(cur_operator_code)
         magnitude: int = 10 ** (computed_ndigits - 1)
-        max_iteration: int = _compute_max_iter(ndigits, cur_operator_code)
+        last_iteration: int = _compute_last_iter(ndigits, cur_operator_code)
         first_iteration: int = _compute_first_iter(metadatas, computed_ndigits, head_max_zeros)
+
+        if first_iteration == -1 or last_iteration == -1:
+            break
 
         if (head_max_zeros == 0 and first_iteration < magnitude):
             first_iteration = magnitude
 
-        for current_iteration in range(first_iteration, max_iteration):
+        for current_iteration in range(first_iteration, last_iteration):
             cur_phone_number_suffix: str = _append_heading_zeros(
                 current_iteration, computed_ndigits, magnitude)
 
