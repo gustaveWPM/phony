@@ -23,4 +23,3 @@ def slice_op_codes(metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
         index: int = operator_mobile_codes.index(needle)
         prefix_data.operator_mobile_codes(operator_mobile_codes[index:])
         prefix_data.start_with_desk(False)
-

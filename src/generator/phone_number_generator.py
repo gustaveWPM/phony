@@ -18,6 +18,15 @@ import generator.smart_reload as smart_reload
 from typing import Optional, List
 
 
+def _is_banned_op_code(op_code: str) -> bool:
+    banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
+
+    for cur_banned_op_code in banned_op_codes:
+        if op_code == cur_banned_op_code:
+            return True
+    return False
+
+
 def _reject_phone_number_suffix(op_code: str, phone_number_suffix: str) -> bool:
     last_block_head_max_zeros: int = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
@@ -79,6 +88,10 @@ def _do_generate_loop(country_code: str, op_codes: List[str], metadatas: Optiona
     ndigits: int = GENERATOR_CONFIG["NDIGITS"]
 
     for cur_op_code in op_codes:
+        if _is_banned_op_code(cur_op_code):
+            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
+                debug_logger("REJECTED_OPERATOR_CODE", cur_op_code)
+            continue
         block_len: int = limit.compute_range_len(cur_op_code)
         magnitude: int = 10 ** (block_len - 1)
         last_iteration: int = limit.compute_range_end(ndigits, cur_op_code)

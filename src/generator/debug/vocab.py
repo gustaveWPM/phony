@@ -13,7 +13,8 @@ VOCAB = {
 
     "DEBUG_MSG": {
         "GENERATED_PHONE_NUMBER": "Generated phone number",
-        "REJECTED_PHONE_NUMBER": "Rejected phone number"
+        "REJECTED_PHONE_NUMBER": "Rejected phone number",
+        "REJECTED_OPERATOR_CODE": "Rejected operator code"
     },
 
     "DEBUG_PREFIX": "[DEBUG]"
