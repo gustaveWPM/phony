@@ -31,6 +31,10 @@ def _do_check_consecutive_same_digit_threshold(config: dict) -> Void:
         raise ValueError(
             "Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be a positive value, less than or equal to NDIGITS")
 
+    if (config["CONSECUTIVE_SAME_DIGIT_THRESHOLD"] > config["SAME_DIGIT_THRESHOLD"]):
+        raise ValueError(
+            "Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be less than or equal to SAME_DIGIT_THRESHOLD")
+
 
 def check_config(config: dict) -> Void:
     _do_check_ndigit(config)
