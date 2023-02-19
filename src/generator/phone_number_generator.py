@@ -12,7 +12,7 @@ import generator.config.builders.database as database_config_builder
 import generator.config.validator as config_validator
 import generator.database.db as database
 import generator.phone_range_limit as limit
-import generator.smart_reload as SmartReload
+import generator.smart_reload as smart_reload
 
 from typing import Optional, List
 
@@ -128,7 +128,8 @@ def _run_phone_numbers_generator() -> Void:
     if DEV.FORCED_OPERATOR_CODES and DEV.UNSAFE:
         prefix_data.force_op_codes(DEV.FORCED_OPERATOR_CODES)
     else:
-        SmartReload.slice_op_codes(reload_metas, prefix_data)
+        if not DEV.DISABLE_SMART_RELOAD:
+            smart_reload.slice_op_codes(reload_metas, prefix_data)
 
     _do_generate(prefix_data, reload_metas)
     database.append_finite_collection_indicator()
