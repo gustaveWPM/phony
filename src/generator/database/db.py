@@ -2,7 +2,9 @@
 
 from generator.metaprog.types import Void
 from generator.config.rules.dev.database import DB as DATABASE_CONFIG
+
 import pymongo
+from pymongo.collection import Collection as DatabaseCollection
 from typing import Optional
 
 DISABLE_PERSISTENCE = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
@@ -10,15 +12,20 @@ DISABLE_PERSISTENCE = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
 MONGO_CLIENT = pymongo.MongoClient(DATABASE_CONFIG["MONGO_DB_CONNECTION_URI"])
 
 DB_NAME_KEY = DATABASE_CONFIG["MONGO_DB_NAME"]
-DB_TABLE_KEY = DATABASE_CONFIG["MONGO_DB_TABLE"]
-
 DB = MONGO_CLIENT[DB_NAME_KEY]
-DB_TABLE = DB[DB_TABLE_KEY]
+
+
+def _get_db_table() -> DatabaseCollection:
+    db_table_key: str = DATABASE_CONFIG["MONGO_DB_TABLE"]
+    db_table = DB[db_table_key]
+    return db_table
 
 
 def _retrieve_last_saved_phone_number_entry() -> Optional[dict]:
+    db_table: DatabaseCollection = _get_db_table()
+
     try:
-        last_saved_phone_number_entry: dict = DB_TABLE.find_one(
+        last_saved_phone_number_entry: dict = db_table.find_one(
             sort=[("_id", pymongo.DESCENDING)])
         return last_saved_phone_number_entry
     except:
@@ -43,6 +50,8 @@ def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
 def save_phone_number(phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
     if DISABLE_PERSISTENCE:
         return
+
+    db_table: DatabaseCollection = _get_db_table()
     database_entry: dict = {
         "phone_number": phone_number,
         "country_code": country_code,
@@ -50,7 +59,7 @@ def save_phone_number(phone_number: str, country_code: str, operator_code: str, 
         "generated_suffix": phone_number_suffix
     }
 
-    DB_TABLE.update_one({"phone_number": phone_number}, {
+    db_table.update_one({"phone_number": phone_number}, {
                         "$set": database_entry}, upsert=True)
 
 
