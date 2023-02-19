@@ -9,7 +9,7 @@ This is probably not the most rigorous way to achieve the sake of this project.
 - Data Persistence (MongoDB)
 - Smart reload (Resumes at its last iteration)
 - Deterministic generation (Finite generator)
-- Unsafe mode (to force a subpool upsert)
+- Unsafe mode (to force upserts on a specific pool interval)
 - Configurable generator:
     - i18n configuration template
     - Country code
