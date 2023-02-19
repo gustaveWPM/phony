@@ -76,7 +76,7 @@ def _do_generate_range(r: range, block_len: int, magnitude: int, cur_op_code: st
             cur_phone_number: str = prefix + cur_phone_number_suffix
             database.save_phone_number(cur_phone_number, country_code,
                                  cur_op_code, cur_phone_number_suffix)
-            if DEV_CONFIG.DEBUG_MODE:
+            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
                 debug_logger("GENERATED_PHONE_NUMBER", cur_phone_number)
         elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
             cur_phone_number: str = prefix + cur_phone_number_suffix
