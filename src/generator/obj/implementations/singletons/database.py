@@ -4,7 +4,7 @@ from generator.metaprog.types import Void
 from generator.metaprog.singleton import Singleton
 from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 from generator.obj.implementations.database_entry import DatabaseEntry
-import generator.config.builders.database as database_config_builder
+from generator.config.builders.database import append_dynamic_conf as build_config
 from generator.obj.implementations.metadatas import Metadatas
 
 import pymongo
@@ -14,17 +14,13 @@ from typing import Optional
 
 class Database(metaclass=Singleton):
     def __init__(self):
-        def build_config(self) -> Void:
-            database_config_builder.append_dynamic_conf(DATABASE_CONFIG)
-
-
         def index_database(self) -> Void:
             db_table: DatabaseCollection = self._get_db_table()
             db_table.create_index([ ("phone_number", pymongo.ASCENDING) ])
 
 
         def initialize(self) -> Void:
-            build_config(self)
+            build_config(DATABASE_CONFIG)
             self._disabled_persistence = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
             if self._disabled_persistence:
                 return
