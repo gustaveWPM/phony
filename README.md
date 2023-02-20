@@ -28,3 +28,4 @@ This is probably not the most rigorous way to achieve the sake of this project.
 ### Dependencies
 
 - [pymongo](https://pypi.org/project/pymongo/)
+- Python 3.8.10
