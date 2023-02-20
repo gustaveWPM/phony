@@ -88,8 +88,18 @@ def _check_consecutive_same_digit_threshold(config: dict) -> Void:
 
 
 def on_build_check_target_options(options: dict) -> Void:
-    if not options["DESK"] and not options["MOBILE"]:
+    start_with_desk: bool = GENERATOR_CONFIG["START_WITH_DESK_OPERATOR_CODES"]
+    target_option_desk: bool = options["DESK"]
+    target_option_mobile: bool = not options["MOBILE"]
+
+    if not target_option_desk and not target_option_mobile:
         terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'MOBILE' are both setted to False.")
+
+    if start_with_desk and not target_option_desk:
+        terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'START_WITH_DESK_OPERATOR_CODES' are both setted to False.")
+
+    if not start_with_desk and not target_option_mobile:
+        terminate(f"{_MSG_PREFIX} Target options 'DESK' setted to False, but 'START_WITH_DESK_OPERATOR_CODES' are both setted to True.")
 
 
 def on_build_check_targeted_country(country: str) -> Void:
