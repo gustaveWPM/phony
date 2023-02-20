@@ -1,7 +1,6 @@
 # coding: utf-8
 
-from generator.metaprog.types import Void
-from generator.metaprog.types import Schema
+from generator.metaprog.types import Void, Schema
 
 
 class MetadatasSchema():
