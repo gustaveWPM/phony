@@ -1,27 +1,21 @@
 # coding: utf-8
 
-from generator.obj.singletons.generator_base import GeneratorBase
+from generator.obj.implementations.singletons.generator_base import GeneratorBase
 from generator.metaprog.types import Void
 from generator.sys.error import terminate
 from generator.debug.logger import debug_logger as debug_logger
 from generator.debug.vocab import VOCAB as DEBUG_VOCAB
 import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
-import generator.smart_reload as smart_reload
 import generator.phone_range_limit as limit
 
 from typing import Optional, List
-from generator.obj.contracts.prefix_data import PrefixData
+from generator.obj.implementations.prefix_data import PrefixData
 
 
 class Generator(GeneratorBase):
     @staticmethod
-    def _smart_reload(metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
-        smart_reload.slice_op_codes(metadatas, prefix_data)
-
-
-    @staticmethod
-    def _append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
+    def __append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
         number_as_string: str = str(number)
         if number >= magnitude:
             return number_as_string
@@ -31,11 +25,17 @@ class Generator(GeneratorBase):
         return phone_suffix
 
 
-    def _do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
+    def __start_with_desk(self, value: Optional[bool] = None) -> Optional[bool]:
+        if value is None:
+            return self._start_with_desk
+        self._start_with_desk = value
+
+
+    def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
 
         for current_iteration in r:
-            cur_phone_number_suffix: str = self._append_heading_zeros(
+            cur_phone_number_suffix: str = self.__append_heading_zeros(
                 current_iteration, block_len, magnitude)
             if not self._reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
                 cur_phone_number: str = prefix + cur_phone_number_suffix
@@ -48,7 +48,7 @@ class Generator(GeneratorBase):
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
 
 
-    def _do_generate_loop(self, country_code: str, op_codes: List[str], metadatas: Optional[dict]):
+    def __do_generate_loop(self, country_code: str, op_codes: List[str], metadatas: Optional[dict]):
         for cur_op_code in op_codes:
             if self._is_banned_op_code(cur_op_code):
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
@@ -59,23 +59,51 @@ class Generator(GeneratorBase):
             last_iteration: int = limit.compute_range_end(cur_op_code)
             first_iteration: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
             r = range(first_iteration, last_iteration)
-            self._do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
+            self.__do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
 
 
-    def _do_generate(self, prefix_data: PrefixData, metadatas: dict) -> Void:
+    def __do_generate(self, prefix_data: PrefixData, metadatas: dict) -> Void:
         country_code: str = prefix_data.country_code()
         op_codes_a: List[str] = []
         op_codes_b: List[str] = []
 
-        if prefix_data.start_with_desk():
+        if self.__start_with_desk():
             op_codes_a = prefix_data.operator_desk_codes()
             op_codes_b = prefix_data.operator_mobile_codes()
         else:
             op_codes_a = prefix_data.operator_mobile_codes()
             op_codes_b = prefix_data.operator_desk_codes()
 
-        self._do_generate_loop(country_code, op_codes_a, metadatas)
-        self._do_generate_loop(country_code, op_codes_b, metadatas)
+        self.__do_generate_loop(country_code, op_codes_a, metadatas)
+        self.__do_generate_loop(country_code, op_codes_b, metadatas)
+
+
+    def __slice_op_codes(
+        self,
+        metadatas: Optional[dict],
+        prefix_data: PrefixData,
+    ) -> Void:
+        if metadatas is None:
+            return
+
+        needle: str = metadatas["phone_number_operator_code"]
+
+        operator_desk_codes: List[str] = prefix_data.operator_desk_codes()
+        operator_mobile_codes: List[str] = prefix_data.operator_mobile_codes()
+
+        if needle in operator_desk_codes:
+            index: int = operator_desk_codes.index(needle)
+            prefix_data.operator_desk_codes(operator_desk_codes[index:])
+            self.start_with_desk(True)
+
+        if needle in operator_mobile_codes:
+            index: int = operator_mobile_codes.index(needle)
+            prefix_data.operator_mobile_codes(operator_mobile_codes[index:])
+            self.start_with_desk(False)
+
+
+    def __smart_reload(self, metadatas: Optional[dict], prefix_data: PrefixData) -> Void:
+        self.__slice_op_codes(metadatas, prefix_data)
 
 
     def process(self) -> Void:
@@ -89,9 +117,9 @@ class Generator(GeneratorBase):
             prefix_data.force_op_codes(DEV_CONFIG.FORCED_OPERATOR_CODES)
         else:
             if not DEV_CONFIG.DISABLE_SMART_RELOAD:
-                self._smart_reload(reload_metas, prefix_data)
+                self.__smart_reload(reload_metas, prefix_data)
 
-        self._do_generate(prefix_data, reload_metas)
+        self.__do_generate(prefix_data, reload_metas)
         self._database.append_finite_collection_indicator()
         if DEV_CONFIG.DEBUG_MODE:
             print(DEBUG_VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])

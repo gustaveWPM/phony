@@ -3,8 +3,8 @@
 from generator.metaprog.singleton import Singleton
 import generator.config.builders.generator as generator_config_builder
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
-from generator.obj.contracts.prefix_data import PrefixData
-from generator.obj.singletons.database import Database
+from generator.obj.implementations.prefix_data import PrefixData
+from generator.obj.implementations.singletons.database import Database
 import generator.config.validator as config_validator
 
 from typing import Optional, List
@@ -21,6 +21,7 @@ class GeneratorBase(metaclass=Singleton):
         self._last_block_head_max_zeros: int = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
         self._banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
         self._prefix_data: PrefixData = GENERATOR_CONFIG["PREFIX_DATA"]
+        self._start_with_desk: bool = GENERATOR_CONFIG["START_WITH_DESK_OPERATOR_CODES"]
         config_validator.check_config(GENERATOR_CONFIG)
 
 

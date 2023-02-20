@@ -8,6 +8,8 @@ def uniq(l: list) -> list:
     l_uniq = reduce(lambda re, x: re+[x] if x not in re else re, l, [])
     return l_uniq
 
+    # * ... see: https://www.geeksforgeeks.org/python-get-unique-values-list/
+
 
 def reverse(l: list) -> list:
     rev_l = l[::-1]

@@ -8,4 +8,4 @@ def str_groupby(s: str) -> dict:
     result = [(label, sum(1 for _ in group)) for label, group in groups]
     return result
 
-# * ... lol: https://stackoverflow.com/questions/34443946/count-consecutive-characters
+# * ... see: https://stackoverflow.com/questions/34443946/count-consecutive-characters

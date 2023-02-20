@@ -1,12 +1,12 @@
 # coding: utf-8
 
 from generator.metaprog.types import Void
-import generator.obj.services.countries as countries_service
+import generator.obj.implementations.countries as countries_service
 from generator.sys.error import terminate
-from generator.obj.contracts.prefix_data import PrefixData
+from generator.obj.implementations.prefix_data import PrefixData
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 from generator.sys.error import print_on_stderr
-from generator.internal_lib.string import str_groupby
+from generator.internal_lib.str import str_groupby
 from typing import List
 
 

@@ -2,8 +2,8 @@
 
 from generator.metaprog.types import Void
 from generator.config.validator import on_build_check_targeted_country, on_build_check_target_options
-import generator.obj.services.countries as countries_service
-from generator.obj.contracts.prefix_data import PrefixData
+import generator.obj.implementations.countries as countries_service
+from generator.obj.implementations.prefix_data import PrefixData
 from generator.config.rules.countries import COUNTRIES
 from typing import List
 

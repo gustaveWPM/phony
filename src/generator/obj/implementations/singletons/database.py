@@ -3,7 +3,9 @@
 from generator.metaprog.types import Void
 from generator.metaprog.singleton import Singleton
 from generator.config.rules.dev.database import DB as DATABASE_CONFIG
+from generator.obj.implementations.database_entry import DatabaseEntry
 import generator.config.builders.database as database_config_builder
+from generator.obj.implementations.metadatas import Metadatas
 
 import pymongo
 from pymongo.collection import Collection as DatabaseCollection
@@ -14,11 +16,12 @@ class Database(metaclass=Singleton):
     def __init__(self):
         def build_config(self) -> Void:
             database_config_builder.append_dynamic_conf(DATABASE_CONFIG)
-            print(DATABASE_CONFIG)
+
 
         def index_database(self) -> Void:
             db_table: DatabaseCollection = self._get_db_table()
             db_table.create_index([ ("phone_number", pymongo.ASCENDING) ])
+
 
         def initialize(self) -> Void:
             build_config(self)
@@ -28,6 +31,7 @@ class Database(metaclass=Singleton):
             self._db = self._mongo_client[self._db_name_key]
             self._db_table_key = DATABASE_CONFIG["MONGO_DB_TABLE"]
             index_database(self)
+
 
         initialize(self)
 
@@ -80,15 +84,13 @@ class Database(metaclass=Singleton):
             return
 
         db_table: DatabaseCollection = self._get_db_table()
-        database_entry: dict = {
-            "phone_number": phone_number,
-            "country_code": country_code,
-            "operator_code": operator_code,
-            "generated_suffix": phone_number_suffix
-        }
+        database_entry: DatabaseEntry = DatabaseEntry(
+            phone_number, country_code, operator_code, phone_number_suffix
+        )
 
+        json: dict = database_entry.schema()
         db_table.update_one({"phone_number": phone_number}, {
-                            "$set": database_entry}, upsert=True)
+                            "$set": json}, upsert=True)
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:
@@ -97,11 +99,11 @@ class Database(metaclass=Singleton):
         entry: Optional[dict] = self._retrieve_last_saved_phone_number_entry()
         if entry is None:
             return None
-        metadatas: dict = {}
-        metadatas["phone_number_suffix"] = self._retrieve_last_saved_phone_number_suffix(entry)
-        metadatas["phone_number_country_code"] = self._retrieve_last_saved_phone_country_code(entry)
-        metadatas["phone_number_operator_code"] = self._retrieve_last_saved_phone_operator_code(entry)
-        return metadatas
+        suffix: str = self._retrieve_last_saved_phone_number_suffix(entry)
+        country_code: str = self._retrieve_last_saved_phone_country_code(entry)
+        operator_code: str = self._retrieve_last_saved_phone_operator_code(entry)
+        metadatas = Metadatas(suffix, country_code, operator_code)
+        return metadatas.schema()
 
 
     def append_finite_collection_indicator(self) -> Void:
