@@ -26,6 +26,8 @@ class Database(metaclass=Singleton):
         def initialize(self) -> Void:
             build_config(self)
             self._disabled_persistence = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
+            if self._disabled_persistence:
+                return
             self._mongo_client = pymongo.MongoClient(DATABASE_CONFIG["MONGO_DB_CONNECTION_URI"])
             self._db_name_key = DATABASE_CONFIG["MONGO_DB_NAME"]
             self._db = self._mongo_client[self._db_name_key]
