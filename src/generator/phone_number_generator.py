@@ -120,12 +120,13 @@ def _skip_generation(data: Optional[dict]) -> bool:
     return database.is_finite_collection(data)
 
 
-def build_config() -> Void:
+def _build_config() -> Void:
     database_config_builder.append_dynamic_conf(DATABASE_CONFIG)
     generator_config_builder.append_dynamic_conf(GENERATOR_CONFIG)
+    database.create_index()
 
 
-def _run_phone_numbers_generator() -> Void:
+def _do_run() -> Void:
     prefix_data: PrefixData = GENERATOR_CONFIG["PREFIX_DATA"]
     reload_metas: dict = database.retrieve_last_saved_phone_metadatas()
 
@@ -146,6 +147,6 @@ def _run_phone_numbers_generator() -> Void:
 
 
 def run() -> Void:
-    build_config()
+    _build_config()
     config_validator.check_config(GENERATOR_CONFIG)
-    _run_phone_numbers_generator()
+    _do_run()

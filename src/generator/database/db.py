@@ -88,3 +88,8 @@ def is_finite_collection(data: dict) -> bool:
         if data[key] != "-1":
             return False
     return True
+
+
+def create_index() -> Void:
+    db_table: DatabaseCollection = _get_db_table()
+    db_table.create_index([ ("phone_number", pymongo.ASCENDING) ])    
