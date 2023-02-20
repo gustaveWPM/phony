@@ -20,4 +20,4 @@ class Schema(dict):
         else:
             super().__setitem__(key, value)
 
-# * ... see: https://stackoverflow.com/questions/58009864/python-how-to-disable-creation-of-new-keys-in-attribute-dict
+    # * ... see: https://stackoverflow.com/questions/58009864/python-how-to-disable-creation-of-new-keys-in-attribute-dict
