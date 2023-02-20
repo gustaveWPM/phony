@@ -8,3 +8,5 @@ class Singleton(type):
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
         return cls._instances[cls]
+
+# * ... see: https://refactoring.guru/fr/design-patterns/singleton/python/example
