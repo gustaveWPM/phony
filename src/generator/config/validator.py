@@ -96,10 +96,10 @@ def on_build_check_target_options(options: dict) -> Void:
         terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'MOBILE' are both setted to False.")
 
     if start_with_desk and not target_option_desk:
-        terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'START_WITH_DESK_OPERATOR_CODES' are both setted to False.")
+        terminate(f"{_MSG_PREFIX} Target options 'DESK' setted to False, but 'START_WITH_DESK_OPERATOR_CODES' setted to True.")
 
     if not start_with_desk and not target_option_mobile:
-        terminate(f"{_MSG_PREFIX} Target options 'DESK' setted to False, but 'START_WITH_DESK_OPERATOR_CODES' are both setted to True.")
+        terminate(f"{_MSG_PREFIX} Target options 'DESK' setted to True, but 'START_WITH_DESK_OPERATOR_CODES' setted to False.")
 
 
 def on_build_check_targeted_country(country: str) -> Void:
