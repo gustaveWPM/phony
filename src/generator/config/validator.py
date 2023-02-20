@@ -90,7 +90,7 @@ def _check_consecutive_same_digit_threshold(config: dict) -> Void:
 def on_build_check_target_options(options: dict) -> Void:
     start_with_desk: bool = GENERATOR_CONFIG["START_WITH_DESK_OPERATOR_CODES"]
     target_option_desk: bool = options["DESK"]
-    target_option_mobile: bool = not options["MOBILE"]
+    target_option_mobile: bool = options["MOBILE"]
 
     if not target_option_desk and not target_option_mobile:
         terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'MOBILE' are both setted to False.")
