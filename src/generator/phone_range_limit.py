@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 import generator.config.rules.dev.generator as DEV_CONFIG
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
@@ -12,12 +13,12 @@ from typing import Optional, List
 
 def compute_range_len(op_code: str) -> int:
     ndigits: int = get_ndigits()
-    range_len: int = ndigits - len(op_code)
+    range_len = ndigits - len(op_code)
     return range_len
 
 
 def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: int) -> int:
-    range_start: int = 0
+    range_start = 0
     last_block_head_max_zeros = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
@@ -53,16 +54,16 @@ def _do_compute_range_end_tail(
     head_appended_nines: str,
     same_digit_threshold: int
 ) -> int:
-    trail: str = ''
-    current_digit: int = 9
+    trail = ''
+    current_digit = 9
 
     trail_elements: List[int] = [8]
     trail_len -= 1
     while (trail_len > 0):
-        current_digit_in_trail_occurrences: int = trail_elements.count(current_digit);
-        current_digit_in_head_occurrences: int = head.count(str(current_digit))
-        total_cur_digit: int = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
-        
+        current_digit_in_trail_occurrences = trail_elements.count(current_digit);
+        current_digit_in_head_occurrences = head.count(str(current_digit))
+        total_cur_digit = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
+
         if total_cur_digit >= same_digit_threshold:
             current_digit -= 1
             if current_digit < 0:
@@ -72,14 +73,14 @@ def _do_compute_range_end_tail(
         trail_elements.append(current_digit)
         trail_len -= 1
     trail = list_to_str(trail_elements)
-    range_end_str: str = head_appended_nines + trail
+    range_end_str = head_appended_nines + trail
     range_end = int(range_end_str) + 1
     return range_end
 
 
 def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
     rev_op_code = reverse(op_code)
-    consecutive_nines_at_op_code_tail: int = 0
+    consecutive_nines_at_op_code_tail = 0
 
     for c in rev_op_code:
         if c == '9':
@@ -91,14 +92,14 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
 
 
 def _do_compute_range_end(op_code: str, block_len: int) -> int:
-    range_end: int = 0
+    range_end = 0
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
     consecutive_nines_at_op_code_tail: int = _do_compute_consecutive_nines_at_op_code_tail(op_code)
-    head_appended_nines: str = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
-    head: str = op_code + head_appended_nines
-    trail_len: int = block_len - len(head_appended_nines)
+    head_appended_nines = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
+    head = op_code + head_appended_nines
+    trail_len = block_len - len(head_appended_nines)
 
     if trail_len > 0:
         range_end = _do_compute_range_end_tail(trail_len, head, head_appended_nines, same_digit_threshold)
@@ -106,7 +107,7 @@ def _do_compute_range_end(op_code: str, block_len: int) -> int:
 
 
 def compute_range_end(op_code: str) -> int:
-    range_end: int = 0
+    range_end = 0
     block_len: int = compute_range_len(op_code)
 
     if DEV_CONFIG.FORCED_RANGE_END >= 0 and DEV_CONFIG.UNSAFE:
