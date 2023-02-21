@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 from generator.obj.schemas.metadatas import MetadatasSchema
 from generator.metaprog.types import Schema
 

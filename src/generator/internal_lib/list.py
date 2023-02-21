@@ -1,13 +1,15 @@
 # coding: utf-8
 
-from typing import List
+
 from functools import reduce
+from typing import List
 
 
 def flatten(l: list) -> list:
     return [item for sublist in l for item in sublist]
 
     # * ... see: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
+
 
 def uniq(l: list) -> list:
     l_uniq = reduce(lambda re, x: re+[x] if x not in re else re, l, [])

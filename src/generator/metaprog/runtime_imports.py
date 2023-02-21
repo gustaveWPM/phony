@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 def runtime_import(modulename: str, obj: any):
     try:
         module = __import__(modulename, globals(), locals(  ), [obj])
@@ -7,4 +8,4 @@ def runtime_import(modulename: str, obj: any):
         return None
     return vars(module)[obj]
 
-# * ... see: https://www.oreilly.com/library/view/python-cookbook/0596001673/ch15s04.html
+    # * ... see: https://www.oreilly.com/library/view/python-cookbook/0596001673/ch15s04.html

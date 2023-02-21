@@ -1,7 +1,10 @@
 # coding: utf-8
 
+
 from generator.config.rules.countries import COUNTRIES
+
 from typing import List
+
 
 _COUNTRIES_LIST: List[str] = list(COUNTRIES.keys())
 

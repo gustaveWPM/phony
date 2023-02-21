@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class PromptChoiceEnum(Enum):
 
     @classmethod
