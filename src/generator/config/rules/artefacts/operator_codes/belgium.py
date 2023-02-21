@@ -1,8 +1,10 @@
 # coding: utf-8
 
+
 from generator.internal_lib.list import uniq
 
-OPERATORS_CODES: dict = {
+
+OPERATORS_CODES = {
     "MOBILE": uniq([
         "999"
     ]),

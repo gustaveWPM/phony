@@ -1,8 +1,10 @@
 # coding: utf-8
 
+
 from generator.metaprog.types import Schema
 
-GENERATOR: Schema = Schema({
+
+GENERATOR = Schema({
     "START_WITH_DESK_OPERATOR_CODES": False,
     "TARGET": {
         "COUNTRY": "FRANCE",

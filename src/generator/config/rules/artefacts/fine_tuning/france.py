@@ -1,6 +1,7 @@
 # coding: utf-8
 
-FINE_TUNING: dict = {
+
+FINE_TUNING = {
     # * ... Number of digits in the complete phone suffix, operator code included
     "NDIGITS": 9,
     # * ... Maximum same digit amount in the generated pseudo-randomly block
