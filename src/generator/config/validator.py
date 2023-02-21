@@ -21,7 +21,12 @@ _STARTING_MSG = "Starting generator..."
 _STARTED_MSG = "Generation started..."
 
 
-def _check_allow_duplicates() -> bool:
+def _check_db_entries_chunk_size() -> Void:
+    if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE <= 0:
+        terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE' should be greater than 0.")
+
+
+def _check_allow_duplicates() -> Void:
     if DEV_CONFIG.ALLOW_DUPLICATES and DEV_CONFIG.DISABLE_SMART_RELOAD:
         if not DEV_CONFIG.UNSAFE:
             terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
@@ -89,29 +94,29 @@ def _check_op_codes(config: dict) -> Void:
 
 def _check_ndigit(config: dict) -> Void:
     if config["NDIGITS"] < config["SAME_DIGIT_THRESHOLD"]:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: NDIGITS should be greater than or equal to SAME_DIGIT_THRESHOLD.")
     if config["NDIGITS"] < config["LAST_BLOCK_HEAD_MAX_ZEROS"]:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: HEAD_MAX_ZEROS should be less than or equal to NDIGITS.")
     if config["NDIGITS"] <= 0:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: NDIGITS should be a positive value, greater than 0")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: NDIGITS should be a positive value, greater than 0.")
 
 
 def _check_same_digit_threshold(config: dict) -> Void:
     if config["SAME_DIGIT_THRESHOLD"] <= 0:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: SAME_DIGIT_THRESHOLD should be a positive value, greater than 0")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: SAME_DIGIT_THRESHOLD should be a positive value, greater than 0.")
 
 
 def _check_head_max_zeros(config: dict) -> Void:
     if config["LAST_BLOCK_HEAD_MAX_ZEROS"] < 0:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: HEAD_MAX_ZEROS should be a positive value, less than or equal to NDIGITS.")
 
 
 def _check_consecutive_same_digit_threshold(config: dict) -> Void:
     if config["CONSECUTIVE_SAME_DIGIT_THRESHOLD"] < 0:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be a positive value, less than or equal to NDIGITS")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be a positive value, less than or equal to NDIGITS.")
 
     if config["CONSECUTIVE_SAME_DIGIT_THRESHOLD"] > config["SAME_DIGIT_THRESHOLD"]:
-        terminate(f"{_MSG_PREFIX} Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be less than or equal to SAME_DIGIT_THRESHOLD")
+        terminate(f"{_MSG_PREFIX} Invalid configuration: CONSECUTIVE_SAME_DIGIT_THRESHOLD should be less than or equal to SAME_DIGIT_THRESHOLD.")
 
 
 def on_build_check_target_options(options: dict) -> Void:
@@ -136,6 +141,7 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
+    _check_db_entries_chunk_size()
     _check_allow_duplicates()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
