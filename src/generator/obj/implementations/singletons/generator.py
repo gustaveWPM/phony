@@ -72,6 +72,7 @@ class Generator(GeneratorBase):
 
 
     # * ... Fixes potential issues related to the smart reload feature, terminates if invalid unsafe params.
+    @staticmethod
     def __sanitized_range(range_start: int, range_end: int) -> range:
         if range_start < 0:
             terminate("Invalid range start value.")
