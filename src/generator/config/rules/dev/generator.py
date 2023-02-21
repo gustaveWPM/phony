@@ -14,3 +14,7 @@ FORCED_VERY_FIRST_ITERATION_VALUE: str = "0"    # * ... Default value is `"0"`
 FORCED_RANGE_START: int = -1                    # * ... Default value is `-1`
 FORCED_RANGE_END: int = -1                      # * ... Default value is `-1`
 FORCED_OPERATOR_CODES: list = []                # * ... Default value is `[]`
+
+AUTOCONFIRM_PROMPTS: dict = {
+    "CONFIGURATION_ERRORS": False               # * ... Default value is `False`
+}

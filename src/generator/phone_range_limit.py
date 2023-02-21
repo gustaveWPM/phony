@@ -1,11 +1,13 @@
 # coding: utf-8
 
 import generator.config.rules.dev.generator as DEV_CONFIG
-from typing import Optional, List
+from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
+import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 from generator.config.absolute_getters.generator import get_ndigits
 from generator.internal_lib.list import reverse, list_to_str
-from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 from generator.sys.error import terminate
+
+from typing import Optional, List
 
 
 def compute_range_len(op_code: str) -> int:
@@ -64,7 +66,7 @@ def _do_compute_range_end_tail(
         if total_cur_digit >= same_digit_threshold:
             current_digit -= 1
             if current_digit < 0:
-                terminate("ERROR: You")
+                terminate(DEBUGGER_CONFIG.BUGTRACKER_MSG)
             continue
 
         trail_elements.append(current_digit)

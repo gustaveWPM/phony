@@ -5,12 +5,39 @@ import generator.obj.implementations.countries as countries_service
 from generator.sys.error import terminate
 from generator.obj.implementations.prefix_data import PrefixData
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
+import generator.config.rules.dev.generator as DEV_CONFIG
 from generator.sys.error import print_on_stderr
 from generator.internal_lib.str import str_groupby
+from generator.sys.prompt import choice_prompt, ConfirmChoice
+
 from typing import List
+import time
 
 
 _MSG_PREFIX = "[CONFIGURATION ERROR]"
+_YOU_SHOULDNT_HAVE_DONE_THAT = "You shouldn't have done that..."
+_STARTING_MSG = "Starting generator..."
+_STARTED_MSG = "Generator started..."
+
+
+def _do_check_allow_duplicates() -> bool:
+    if DEV_CONFIG.ALLOW_DUPLICATES and DEV_CONFIG.DISABLE_SMART_RELOAD:
+        if not DEV_CONFIG.UNSAFE:
+            terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
+        else:
+            msg: str = f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True."
+            if DEV_CONFIG.AUTOCONFIRM_PROMPTS["CONFIGURATION_ERRORS"]:
+                print(msg)
+                response = ConfirmChoice.ACCEPT
+            else:
+                response: ConfirmChoice = choice_prompt(msg, ConfirmChoice, ConfirmChoice.REJECT)
+            if response == ConfirmChoice.REJECT:
+                terminate()
+            else:
+                print(_YOU_SHOULDNT_HAVE_DONE_THAT)
+                time.sleep(5)
+                print(_STARTING_MSG)
+                time.sleep(2)
 
 
 def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
@@ -109,8 +136,10 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
+    _do_check_allow_duplicates()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
     _check_head_max_zeros(config)
     _check_consecutive_same_digit_threshold(config)
     _check_op_codes(config)
+    print(_STARTED_MSG)
