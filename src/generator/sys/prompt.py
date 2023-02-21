@@ -1,9 +1,11 @@
 # coding: utf-8
 
+
+import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
+import generator.config.rules.dev.generator as DEV_CONFIG
+from generator.sys.error import terminate
 from generator.internal_lib.list import strlist_to_str, flatten
 from generator.metaprog.my_enum import PromptChoiceEnum
-from generator.sys.error import terminate
-import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 
 from enum import Enum
 from typing import List
@@ -36,25 +38,34 @@ def _generate_choices_indicator(enum: Enum, defaut_enum_value = None):
     return choices_indicator_str
 
 
-def choice_prompt(msg: str, enum: PromptChoiceEnum, default_confirm = None):
-    choices: list = flatten(enum.values())
-    choices_indicator: str = _generate_choices_indicator(enum, default_confirm)
-    user_input: str = ''
+def choice_prompt(msg: str, enum: PromptChoiceEnum, default_confirm = None, **kwargs):
+    try:
+        key = kwargs.get('autoconfirm_key', False)
 
-    while True:
-        print(msg)
-        user_input: str = input(f"Continue? [{choices_indicator}] ").lower().strip()
-        if user_input in choices:
-            break
-        elif default_confirm is not None and user_input == '':
-            break
+        if DEV_CONFIG.UNSAFE and key and DEV_CONFIG.AUTOCONFIRM_PROMPTS[key]:
+            print(msg)
+            return enum.ACCEPT
+        choices: list = flatten(enum.values())
+        choices_indicator: str = _generate_choices_indicator(enum, default_confirm)
+        user_input: str = ''
 
-    if user_input == '':
-        return default_confirm
+        while True:
+            print(msg)
+            user_input: str = input(f"Continue? [{choices_indicator}] ").lower().strip()
+            if user_input in choices:
+                break
+            elif default_confirm is not None and user_input == '':
+                break
 
-    confirm_choices = list(enum)
-    for index, choice in enumerate(confirm_choices):
-        if user_input in choice.value:
-            return choice
+        if user_input == '':
+            return default_confirm
+
+        confirm_choices = list(enum)
+        for index, choice in enumerate(confirm_choices):
+            if user_input in choice.value:
+                return choice
+    except EOFError:
+        raise EOFError("#choice_prompt: EOF Error")
+
 
     terminate(DEBUGGER_CONFIG.BUGTRACKER_MSG)

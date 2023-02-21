@@ -1,14 +1,15 @@
 # coding: utf-8
 
-from generator.metaprog.types import Void
-import generator.obj.implementations.countries as countries_service
-from generator.sys.error import terminate
-from generator.obj.implementations.prefix_data import PrefixData
+
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 import generator.config.rules.dev.generator as DEV_CONFIG
-from generator.sys.error import print_on_stderr
-from generator.internal_lib.str import str_groupby
+from generator.sys.error import terminate, print_on_stderr
 from generator.sys.prompt import choice_prompt, ConfirmChoice
+from generator.internal_lib.str import str_groupby
+import generator.obj.implementations.countries as countries_service
+from generator.obj.implementations.prefix_data import PrefixData
+from generator.metaprog.types import Void
+
 
 from typing import List
 import time
@@ -17,7 +18,7 @@ import time
 _MSG_PREFIX = "[CONFIGURATION ERROR]"
 _YOU_SHOULDNT_HAVE_DONE_THAT = "You shouldn't have done that..."
 _STARTING_MSG = "Starting generator..."
-_STARTED_MSG = "Generator started..."
+_STARTED_MSG = "Generation started..."
 
 
 def _do_check_allow_duplicates() -> bool:
@@ -25,23 +26,22 @@ def _do_check_allow_duplicates() -> bool:
         if not DEV_CONFIG.UNSAFE:
             terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
         else:
-            msg: str = f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True."
-            if DEV_CONFIG.AUTOCONFIRM_PROMPTS["CONFIGURATION_ERRORS"]:
-                print(msg)
-                response = ConfirmChoice.ACCEPT
-            else:
-                response: ConfirmChoice = choice_prompt(msg, ConfirmChoice, ConfirmChoice.REJECT)
-            if response == ConfirmChoice.REJECT:
+            try:
+                msg = f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True."
+                response: ConfirmChoice = choice_prompt(msg, ConfirmChoice, ConfirmChoice.REJECT, autoconfirm_key="CONFIGURATION_ERROR")
+                if response == ConfirmChoice.REJECT:
+                    terminate()
+                else:
+                    print(_YOU_SHOULDNT_HAVE_DONE_THAT)
+                    time.sleep(3)
+                    print(_STARTING_MSG)
+                    time.sleep(2)
+            except EOFError:
                 terminate()
-            else:
-                print(_YOU_SHOULDNT_HAVE_DONE_THAT)
-                time.sleep(5)
-                print(_STARTING_MSG)
-                time.sleep(2)
 
 
 def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
-    groups: dict = str_groupby(op_code)
+    groups: list = str_groupby(op_code)
 
     for same_consecutive_digit in [d[1] for d in groups]:
         if same_consecutive_digit > config["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]:
@@ -50,8 +50,8 @@ def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
 
 
 def _do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
-    has_failed: bool = False
-    respect_same_digit_rule: bool = True
+    has_failed = False
+    respect_same_digit_rule = True
 
     for cur_op_code in op_codes:
         ndigits: int = config["NDIGITS"]
@@ -72,8 +72,8 @@ def _check_op_codes(config: dict) -> Void:
     op_codes_a: List[str] = prefix_data.operator_desk_codes()
     op_codes_b: List[str] = prefix_data.operator_mobile_codes()
 
-    make_crash: bool = False
-    has_failed: bool = False
+    make_crash = False
+    has_failed = False
 
     has_failed = _do_check_op_codes(config, op_codes_a)
     if has_failed:

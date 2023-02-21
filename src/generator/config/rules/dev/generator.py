@@ -6,7 +6,7 @@ from generator.metaprog.types import Schema
 
 DB_ENTRIES_CHUNK_SIZE = 5000                    # * ... Default value is `5000`
 DISABLE_MULTITHREADING = False                  # * ... Default value is `False`
-ALLOW_DUPLICATES = False                        # * ... Default value is `False`
+ALLOW_DUPLICATES = True                        # * ... Default value is `False`
 
 DEBUG_MODE = False                              # * ... Default value is `False`
 
@@ -18,8 +18,8 @@ DEBUG_MODE = False                              # * ... Default value is `False`
 """
 
 
-UNSAFE = False                                  # * ... Default value is `False`
-DISABLE_SMART_RELOAD = False                    # * ... Default value is `False`
+UNSAFE = True                                  # * ... Default value is `False`
+DISABLE_SMART_RELOAD = True                    # * ... Default value is `False`
 FORCE_VERY_FIRST_ITERATION = False              # * ... Default value is `False`
 
 FORCED_VERY_FIRST_ITERATION_VALUE: str = "0"    # * ... Default value is `"0"`
