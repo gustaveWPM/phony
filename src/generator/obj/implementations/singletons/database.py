@@ -86,9 +86,9 @@ class Database(metaclass=Singleton):
             phone_number, country_code, operator_code, phone_number_suffix
         )
 
-        json: dict = database_entry.schema()
+        entity: dict = database_entry.schema()
         db_table.update_one({"phone_number": phone_number}, {
-                            "$set": json}, upsert=True)
+                            "$set": entity}, upsert=True)
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:

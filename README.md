@@ -29,3 +29,4 @@ This is probably not the most rigorous way to achieve the sake of this project.
 
 - [pymongo](https://pypi.org/project/pymongo/)
 - Python 3.8.10
+- MongoDB
