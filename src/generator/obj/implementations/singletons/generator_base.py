@@ -1,11 +1,13 @@
 # coding: utf-8
 
-from generator.metaprog.singleton import Singleton
-import generator.config.builders.generator as generator_config_builder
+
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
+import generator.config.builders.generator as generator_config_builder
+import generator.config.validator as config_validator
 from generator.obj.implementations.prefix_data import PrefixData
 from generator.obj.implementations.singletons.database import Database
-import generator.config.validator as config_validator
+from generator.metaprog.singleton import Singleton
+
 
 from typing import Optional, List
 

@@ -1,17 +1,19 @@
 # coding: utf-8
 
-from generator.obj.implementations.singletons.generator_base import GeneratorBase
-from generator.obj.implementations.prefix_data import PrefixData
-from generator.metaprog.types import Void
-from generator.sys.error import terminate
-from generator.debug.logger import debug_logger as debug_logger
+
 from generator.debug.vocab import VOCAB as DEBUG_VOCAB
 import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
-import generator.phone_range_limit as limit
+from generator.debug.logger import debug_logger
+from generator.obj.implementations.prefix_data import PrefixData
 from generator.obj.implementations.database_entry import DatabaseEntry
+from generator.obj.implementations.singletons.generator_base import GeneratorBase
+from generator.sys.error import terminate
+import generator.phone_range_limit as limit
+from generator.metaprog.types import Void
 
 from typing import Optional, List
+
 
 class Generator(GeneratorBase):
     @staticmethod
@@ -33,7 +35,6 @@ class Generator(GeneratorBase):
 
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
-
         last_iteration = r[-1]
         db_entries_counter = 0
         db_entries_chunk: List[DatabaseEntry] = []
@@ -76,10 +77,14 @@ class Generator(GeneratorBase):
                     debug_logger("REJECTED_OPERATOR_CODE", cur_op_code)
                 continue
             block_len: int = limit.compute_range_len(cur_op_code)
-            magnitude: int = 10 ** (block_len - 1)
-            last_iteration: int = limit.compute_range_end(cur_op_code)
-            first_iteration: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
-            r = range(first_iteration, last_iteration)
+            magnitude = 10 ** (block_len - 1)
+            range_end: int = limit.compute_range_end(cur_op_code)
+            range_start: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
+            if range_start == -1:
+                terminate("Invalid range start value.")
+            elif range_end == -1:
+                terminate("Invalid range end value.")
+            r = range(range_start, range_end)
             self.__do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
 
 
@@ -113,12 +118,12 @@ class Generator(GeneratorBase):
         operator_mobile_codes: List[str] = prefix_data.operator_mobile_codes()
 
         if needle in operator_desk_codes:
-            index: int = operator_desk_codes.index(needle)
+            index = operator_desk_codes.index(needle)
             prefix_data.operator_desk_codes(operator_desk_codes[index:])
             self.__start_with_desk(True)
 
         if needle in operator_mobile_codes:
-            index: int = operator_mobile_codes.index(needle)
+            index = operator_mobile_codes.index(needle)
             prefix_data.operator_mobile_codes(operator_mobile_codes[index:])
             self.__start_with_desk(False)
 
@@ -128,8 +133,8 @@ class Generator(GeneratorBase):
 
 
     def process(self) -> Void:
-        prefix_data: PrefixData = self._prefix_data
-        reload_metas: dict = self._database.retrieve_last_saved_phone_metadatas()
+        prefix_data = self._prefix_data
+        reload_metas = self._database.retrieve_last_saved_phone_metadatas()
 
         if self._skip_generation(reload_metas):
             terminate(DEBUG_VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"], 0)
