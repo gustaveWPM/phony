@@ -13,6 +13,7 @@ from generator.obj.implementations.metadatas import Metadatas
 import pymongo
 from pymongo.collection import Collection as DatabaseCollection
 from typing import Optional, List
+from multiprocessing.pool import ThreadPool
 # from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 
@@ -81,8 +82,9 @@ class Database(metaclass=Singleton):
             return None
 
 
-    def __save_phone_number(self, database_entry: DatabaseEntry) -> Void:
-        db_table: DatabaseCollection = self._get_db_table()
+    def __save_phone_number(*args) -> Void:
+        self_instance, database_entry = args
+        db_table: DatabaseCollection = self_instance._get_db_table()
         entry_schema: dict = database_entry.schema()
         db_table.update_one({"phone_number": entry_schema["phone_number"]}, {
                             "$set": entry_schema}, upsert=True)
@@ -93,8 +95,10 @@ class Database(metaclass=Singleton):
         if self._disabled_persistence:
             return
 
-        for database_entry in entries:
-            self.__save_phone_number(database_entry)
+        with ThreadPool() as pool:
+            pool.map(self.__save_phone_number, entries)
+        # for database_entry in entries:
+        #     self.__save_phone_number(database_entry)
 
         if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_DB_UPDATES:
             debug_logger("SAVED_CHUNK_IN_DATABASE")
