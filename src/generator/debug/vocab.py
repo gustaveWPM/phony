@@ -14,7 +14,8 @@ VOCAB = {
     "DEBUG_MSG": {
         "GENERATED_PHONE_NUMBER": "Generated phone number",
         "REJECTED_PHONE_NUMBER": "Rejected phone number",
-        "REJECTED_OPERATOR_CODE": "Rejected operator code"
+        "REJECTED_OPERATOR_CODE": "Rejected operator code",
+        "SAVED_CHUNK_IN_DATABASE": "Saved generated phone numbers chunk into your Database"
     },
 
     "DEBUG_PREFIX": "[DEBUG]"

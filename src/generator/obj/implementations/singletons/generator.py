@@ -45,6 +45,12 @@ class Generator(GeneratorBase):
 
             if not self._reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
                 cur_phone_number: str = prefix + cur_phone_number_suffix
+                if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
+                    debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
+
+                if self._database._disabled_persistence:
+                    continue
+
                 database_entry: DatabaseEntry = DatabaseEntry(
                     cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix
                 )
@@ -55,7 +61,6 @@ class Generator(GeneratorBase):
                     self._database.save_phone_numbers(db_entries_chunk)
                     db_entries_chunk = []
                     db_entries_counter = 0
-
 
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
                 cur_phone_number: str = prefix + cur_phone_number_suffix

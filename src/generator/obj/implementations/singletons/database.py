@@ -81,26 +81,23 @@ class Database(metaclass=Singleton):
             return None
 
 
-    # @jit(target_backend='cpu', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
-    def save_phone_number(self, database_entry: DatabaseEntry) -> Void:
-        if self._disabled_persistence:
-            return
-
+    def __save_phone_number(self, database_entry: DatabaseEntry) -> Void:
         db_table: DatabaseCollection = self._get_db_table()
         entry_schema: dict = database_entry.schema()
         db_table.update_one({"phone_number": entry_schema["phone_number"]}, {
                             "$set": entry_schema}, upsert=True)
 
 
+    # @jit(target_backend='cpu', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
     def save_phone_numbers(self, entries: List[DatabaseEntry]):
-        for database_entry in entries:
-            self.save_phone_number(database_entry)
+        if self._disabled_persistence:
+            return
 
-            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
-                database_entry_schema: dict = database_entry.schema()
-                cur_phone_number: str = database_entry_schema["phone_number"]
-                cur_op_code: str = database_entry_schema["operator_code"]
-                debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
+        for database_entry in entries:
+            self.__save_phone_number(database_entry)
+
+        if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_DB_UPDATES:
+            debug_logger("SAVED_CHUNK_IN_DATABASE")
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:
