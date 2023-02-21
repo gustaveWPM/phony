@@ -93,13 +93,23 @@ class Database(metaclass=Singleton):
                                 "$set": entry_schema}, upsert=True)
 
 
-    def save_phone_numbers(self, entries: List[DatabaseEntry]):
+    def __weak_save_phone_numbers(self, db_entries: List[DatabaseEntry]) -> Void:
+        entries: dict = [entry.weak_schema() for entry in db_entries]
+        db_table: DatabaseCollection = self._get_db_table()
+        db_table.insert_many(entries)
+
+
+    def save_phone_numbers(self, entries: List[DatabaseEntry]) -> Void:
         if self._disabled_persistence:
             return
 
-        if DEV_CONFIG.DISABLE_MULTITHREADING:
+        if DEV_CONFIG.ALLOW_DUPLICATES:
+            self.__weak_save_phone_numbers(entries)
+
+        elif DEV_CONFIG.DISABLE_MULTITHREADING:
             for database_entry in entries:
                 self.__save_phone_number(database_entry)
+
         else:
             with ThreadPool() as pool:
                 pool.map(self.__save_phone_number, entries)
