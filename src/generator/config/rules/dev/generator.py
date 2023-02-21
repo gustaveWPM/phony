@@ -4,7 +4,7 @@
 from generator.metaprog.types import Schema
 
 
-DB_ENTRIES_CHUNK_SIZE = 5000                    # * ... Default value is `5000`
+DB_ENTRIES_CHUNK_SIZE = 50000                   # * ... Default value is `50000`
 DISABLE_MULTITHREADING = False                  # * ... Default value is `False`
 ALLOW_DUPLICATES = False                        # * ... Default value is `False`
 
