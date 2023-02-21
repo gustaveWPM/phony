@@ -84,9 +84,9 @@ class Database(metaclass=Singleton):
             return
 
         db_table: DatabaseCollection = self._get_db_table()
-        entity: dict = database_entry.schema()
-        db_table.update_one({"phone_number": entity["phone_number"]}, {
-                            "$set": entity}, upsert=True)
+        entry_schema: dict = database_entry.schema()
+        db_table.update_one({"phone_number": entry_schema["phone_number"]}, {
+                            "$set": entry_schema}, upsert=True)
 
 
     def save_phone_numbers(self, entries: List[DatabaseEntry]):
