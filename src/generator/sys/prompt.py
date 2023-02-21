@@ -18,13 +18,14 @@ class ConfirmChoice(PromptChoiceEnum):
 
 def _generate_choices_indicator(enum: Enum, defaut_enum_value = None):
     confirm_choices = list(enum)
+    choices_indicator: List[str] = []
+    default_choice_indicator: str = ''
+
     if defaut_enum_value is None:
         default_choice_index = -1
     else:
         default_choice_index = confirm_choices.index(defaut_enum_value)
 
-    choices_indicator: List[str] = []
-    default_choice_indicator: str = ''
     for index, choice in enumerate(confirm_choices):
         if index == default_choice_index:
             default_choice_indicator = choice.value[0].upper()
@@ -45,8 +46,10 @@ def choice_prompt(msg: str, enum: PromptChoiceEnum, default_confirm = None, **kw
         if DEV_CONFIG.UNSAFE and key and DEV_CONFIG.AUTOCONFIRM_PROMPTS[key]:
             print(msg)
             return enum.ACCEPT
+
         choices: list = flatten(enum.values())
         choices_indicator: str = _generate_choices_indicator(enum, default_confirm)
+        confirm_choices = list(enum)
         user_input: str = ''
 
         while True:
@@ -60,7 +63,6 @@ def choice_prompt(msg: str, enum: PromptChoiceEnum, default_confirm = None, **kw
         if user_input == '':
             return default_confirm
 
-        confirm_choices = list(enum)
         for index, choice in enumerate(confirm_choices):
             if user_input in choice.value:
                 return choice
