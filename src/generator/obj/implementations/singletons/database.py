@@ -3,6 +3,9 @@
 from generator.metaprog.types import Void
 from generator.metaprog.singleton import Singleton
 from generator.config.rules.dev.database import DB as DATABASE_CONFIG
+import generator.config.rules.dev.generator as DEV_CONFIG
+import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
+from generator.debug.logger import debug_logger as debug_logger
 from generator.obj.implementations.database_entry import DatabaseEntry
 from generator.config.builders.database import append_dynamic_conf as build_config
 from generator.obj.implementations.metadatas import Metadatas
@@ -90,9 +93,14 @@ class Database(metaclass=Singleton):
 
 
     def save_phone_numbers(self, entries: List[DatabaseEntry]):
-        # * ... {ToDo}
-        print(entries)
-        exit(0)
+        for database_entry in entries:
+            self.save_phone_number(database_entry)
+
+            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
+                database_entry_schema: dict = database_entry.schema()
+                cur_phone_number: str = database_entry_schema["phone_number"]
+                cur_op_code: str = database_entry_schema["operator_code"]
+                debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:

@@ -1,5 +1,7 @@
 # coding: utf-8
 
+DB_ENTRIES_CHUNK_SIZE = 50                  # * ... Default value is `50`
+
 DEBUG_MODE: bool = True                    # * ... Default value is `False`
 
 UNSAFE: bool = False                        # * ... Default value is `False`

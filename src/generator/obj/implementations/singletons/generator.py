@@ -35,22 +35,35 @@ class Generator(GeneratorBase):
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
 
+        last_iteration = r[-1]
+        db_entries_counter = 0
+        db_entries_chunk: List[DatabaseEntry] = []
+
         for current_iteration in r:
             cur_phone_number_suffix: str = self.__append_heading_zeros(
                 current_iteration, block_len, magnitude)
+
             if not self._reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
                 cur_phone_number: str = prefix + cur_phone_number_suffix
                 database_entry: DatabaseEntry = DatabaseEntry(
                     cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix
                 )
 
-                self._database.save_phone_number(database_entry)
-                if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
-                    debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
+                db_entries_chunk.insert(0, database_entry)
+                db_entries_counter += 1
+                if db_entries_counter >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE:
+                    self._database.save_phone_numbers(db_entries_chunk)
+                    db_entries_chunk = []
+                    db_entries_counter = 0
+
+
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
                 cur_phone_number: str = prefix + cur_phone_number_suffix
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
 
+            if current_iteration == last_iteration:
+                if db_entries_counter > 0:
+                    self._database.save_phone_numbers(db_entries_chunk)
 
     def __do_generate_loop(self, country_code: str, op_codes: List[str], metadatas: Optional[dict]):
         for cur_op_code in op_codes:
