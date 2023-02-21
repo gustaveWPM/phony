@@ -11,8 +11,7 @@ import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 import generator.phone_range_limit as limit
 
 from typing import Optional, List
-from numba import jit
-
+# from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 class Generator(GeneratorBase):
     @staticmethod
@@ -31,8 +30,7 @@ class Generator(GeneratorBase):
             return self._start_with_desk
         self._start_with_desk = value
 
-
-    @jit(target_backend='cuda', forceobj=True)
+    # @jit(target_backend='cuda', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
 
@@ -44,7 +42,7 @@ class Generator(GeneratorBase):
                 self._database.save_phone_number(cur_phone_number, country_code,
                                     cur_op_code, cur_phone_number_suffix)
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
-                    debug_logger("GENERATED_PHONE_NUMBER", cur_phone_number)
+                    debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
                 cur_phone_number: str = prefix + cur_phone_number_suffix
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
@@ -96,12 +94,12 @@ class Generator(GeneratorBase):
         if needle in operator_desk_codes:
             index: int = operator_desk_codes.index(needle)
             prefix_data.operator_desk_codes(operator_desk_codes[index:])
-            self.start_with_desk(True)
+            self.__start_with_desk(True)
 
         if needle in operator_mobile_codes:
             index: int = operator_mobile_codes.index(needle)
             prefix_data.operator_mobile_codes(operator_mobile_codes[index:])
-            self.start_with_desk(False)
+            self.__start_with_desk(False)
 
 
     def __smart_reload(self, metadatas: Optional[dict], prefix_data: PrefixData) -> Void:

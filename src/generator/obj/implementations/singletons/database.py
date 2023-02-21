@@ -10,6 +10,7 @@ from generator.obj.implementations.metadatas import Metadatas
 import pymongo
 from pymongo.collection import Collection as DatabaseCollection
 from typing import Optional
+# from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 
 class Database(metaclass=Singleton):
@@ -77,6 +78,7 @@ class Database(metaclass=Singleton):
             return None
 
 
+    # @jit(target_backend='cpu', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
     def save_phone_number(self, phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
         if self._disabled_persistence:
             return
