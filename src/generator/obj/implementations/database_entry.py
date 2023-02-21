@@ -16,3 +16,7 @@ class DatabaseEntry(DatabaseEntrySchema):
 
     def schema(self) -> Schema:
         return self._schema
+
+
+    def weak_schema(self) -> dict:
+        return self._schema.copy()

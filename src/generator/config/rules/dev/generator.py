@@ -2,6 +2,7 @@
 
 DB_ENTRIES_CHUNK_SIZE = 5000                    # * ... Default value is `5000`
 DISABLE_MULTITHREADING = False                  # * ... Default value is `False`
+ALLOW_DUPLICATES = True                         # * ... Default value is `True`
 
 DEBUG_MODE: bool = True                        # * ... Default value is `False`
 
