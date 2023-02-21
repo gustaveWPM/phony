@@ -55,7 +55,7 @@ class Generator(GeneratorBase):
                     cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix
                 )
 
-                db_entries_chunk.insert(0, database_entry)
+                db_entries_chunk.append(database_entry)
                 db_entries_counter += 1
                 if db_entries_counter >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE:
                     self._database.save_phone_numbers(db_entries_chunk)
