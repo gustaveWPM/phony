@@ -1,19 +1,22 @@
 # coding: utf-8
 
-from generator.metaprog.types import Void
+
+from generator.config.rules.countries import COUNTRIES
 from generator.config.validator import on_build_check_targeted_country, on_build_check_target_options
 import generator.obj.implementations.countries as countries_service
 from generator.obj.implementations.prefix_data import PrefixData
-from generator.config.rules.countries import COUNTRIES
+from generator.metaprog.types import Void
+
+
 from typing import List
 
 
 def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
-    country: str = target["COUNTRY"]
-    fine_tuning_dict: dict = COUNTRIES[country]["FINE_TUNING"]
+    key: str = target["COUNTRY"]
+    fine_tuning: dict = COUNTRIES[key]["FINE_TUNING"]
 
-    for key in fine_tuning_dict:
-        conf[key] = fine_tuning_dict[key]
+    for key in fine_tuning:
+        conf[key] = fine_tuning[key]
 
 
 def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
@@ -29,7 +32,7 @@ def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     if options["MOBILE"]:
         operator_mobile_codes = countries_service.get_country_mobile_operator_codes(country)
 
-    prefix_data: PrefixData = PrefixData(country_code, operator_desk_codes, operator_mobile_codes)
+    prefix_data = PrefixData(country_code, operator_desk_codes, operator_mobile_codes)
     return prefix_data
 
 
@@ -42,7 +45,7 @@ def _generate_prefix_data(target: dict) -> PrefixData:
 
 
 def _append_prefix_data(target: dict) -> PrefixData:
-    prefix_data: PrefixData = _generate_prefix_data(target)
+    prefix_data = _generate_prefix_data(target)
     return prefix_data
 
 

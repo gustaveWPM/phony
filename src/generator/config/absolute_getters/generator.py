@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 from generator.config.rules.generator import GENERATOR
 from generator.metaprog.runtime_imports import runtime_import
 from generator.config.validator import on_build_check_targeted_country
