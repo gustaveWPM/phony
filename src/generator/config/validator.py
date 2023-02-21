@@ -21,7 +21,7 @@ _STARTING_MSG = "Starting generator..."
 _STARTED_MSG = "Generation started..."
 
 
-def _do_check_allow_duplicates() -> bool:
+def _check_allow_duplicates() -> bool:
     if DEV_CONFIG.ALLOW_DUPLICATES and DEV_CONFIG.DISABLE_SMART_RELOAD:
         if not DEV_CONFIG.UNSAFE:
             terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
@@ -136,7 +136,7 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
-    _do_check_allow_duplicates()
+    _check_allow_duplicates()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
     _check_head_max_zeros(config)
