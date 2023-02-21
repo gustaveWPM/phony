@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 from generator.obj.schemas.database_entry import DatabaseEntrySchema
 from generator.metaprog.types import Schema
 

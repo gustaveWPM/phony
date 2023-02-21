@@ -1,6 +1,8 @@
 # coding: utf-8
 
+
 from generator.obj.schemas.prefix_data import PrefixDataSchema
+
 from typing import List, Optional
 
 

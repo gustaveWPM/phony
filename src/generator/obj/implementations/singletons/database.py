@@ -1,19 +1,21 @@
 # coding: utf-8
 
-from generator.metaprog.types import Void
-from generator.metaprog.singleton import Singleton
-from generator.config.rules.dev.database import DB as DATABASE_CONFIG
+
 import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
-from generator.debug.logger import debug_logger as debug_logger
-from generator.obj.implementations.database_entry import DatabaseEntry
+from generator.config.rules.dev.database import DB as DATABASE_CONFIG
+from generator.debug.logger import debug_logger
 from generator.config.builders.database import append_dynamic_conf as build_config
+from generator.obj.implementations.database_entry import DatabaseEntry
 from generator.obj.implementations.metadatas import Metadatas
+from generator.metaprog.singleton import Singleton
+from generator.metaprog.types import Void
+
 
 import pymongo
 from pymongo.collection import Collection as DatabaseCollection
-from typing import Optional, List
 from multiprocessing.pool import ThreadPool
+from typing import Optional, List
 
 
 class Database(metaclass=Singleton):
@@ -39,24 +41,6 @@ class Database(metaclass=Singleton):
 
 
     @staticmethod
-    def _retrieve_last_saved_phone_operator_code(entry: dict) -> str:
-        data: str = entry["operator_code"]
-        return data
-
-
-    @staticmethod
-    def _retrieve_last_saved_phone_country_code(entry: dict) -> str:
-        data: str = entry["country_code"]
-        return data
-
-
-    @staticmethod
-    def _retrieve_last_saved_phone_number_suffix(entry: dict) -> str:
-        data: str = entry["generated_suffix"]
-        return data
-
-
-    @staticmethod
     def is_finite_collection(data: dict) -> bool:
         for key in data:
             if data[key] != "-1":
@@ -65,18 +49,15 @@ class Database(metaclass=Singleton):
 
 
     def _get_db_table(self) -> DatabaseCollection:
-        db_table_key: str = self._db_table_key
-        db_table: DatabaseCollection = self._db[db_table_key]
-        return db_table
+        return self._db[self._db_table_key]
 
 
     def _retrieve_last_saved_phone_number_entry(self) -> Optional[dict]:
         db_table: DatabaseCollection = self._get_db_table()
 
         try:
-            last_saved_phone_number_entry: dict = db_table.find_one(
-                sort=[("_id", pymongo.DESCENDING)])
-            return last_saved_phone_number_entry
+            d: dict = db_table.find_one(sort=[("_id", pymongo.DESCENDING)])
+            return d
         except:
             return None
 
@@ -124,9 +105,9 @@ class Database(metaclass=Singleton):
         entry: Optional[dict] = self._retrieve_last_saved_phone_number_entry()
         if entry is None:
             return None
-        suffix: str = self._retrieve_last_saved_phone_number_suffix(entry)
-        country_code: str = self._retrieve_last_saved_phone_country_code(entry)
-        operator_code: str = self._retrieve_last_saved_phone_operator_code(entry)
+        suffix = entry["generated_suffix"]
+        country_code = entry["country_code"]
+        operator_code = entry["operator_code"]
         metadatas = Metadatas(suffix, country_code, operator_code)
         return metadatas.schema()
 
