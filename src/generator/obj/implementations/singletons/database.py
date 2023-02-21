@@ -14,7 +14,6 @@ import pymongo
 from pymongo.collection import Collection as DatabaseCollection
 from typing import Optional, List
 from multiprocessing.pool import ThreadPool
-# from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 
 class Database(metaclass=Singleton):
@@ -90,7 +89,6 @@ class Database(metaclass=Singleton):
                             "$set": entry_schema}, upsert=True)
 
 
-    # @jit(target_backend='cpu', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
     def save_phone_numbers(self, entries: List[DatabaseEntry]):
         if self._disabled_persistence:
             return

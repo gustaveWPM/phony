@@ -12,7 +12,6 @@ import generator.phone_range_limit as limit
 from generator.obj.implementations.database_entry import DatabaseEntry
 
 from typing import Optional, List
-# from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 class Generator(GeneratorBase):
     @staticmethod
@@ -31,7 +30,7 @@ class Generator(GeneratorBase):
             return self._start_with_desk
         self._start_with_desk = value
 
-    # @jit(target_backend='cuda', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
+
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
 
