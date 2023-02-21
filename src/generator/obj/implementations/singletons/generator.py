@@ -9,6 +9,7 @@ from generator.debug.vocab import VOCAB as DEBUG_VOCAB
 import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 import generator.phone_range_limit as limit
+from generator.obj.implementations.database_entry import DatabaseEntry
 
 from typing import Optional, List
 # from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
@@ -39,8 +40,11 @@ class Generator(GeneratorBase):
                 current_iteration, block_len, magnitude)
             if not self._reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
                 cur_phone_number: str = prefix + cur_phone_number_suffix
-                self._database.save_phone_number(cur_phone_number, country_code,
-                                    cur_op_code, cur_phone_number_suffix)
+                database_entry: DatabaseEntry = DatabaseEntry(
+                    cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix
+                )
+
+                self._database.save_phone_number(database_entry)
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
                     debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:

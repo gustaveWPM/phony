@@ -9,7 +9,7 @@ from generator.obj.implementations.metadatas import Metadatas
 
 import pymongo
 from pymongo.collection import Collection as DatabaseCollection
-from typing import Optional
+from typing import Optional, List
 # from numba import jit # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
 
 
@@ -79,18 +79,20 @@ class Database(metaclass=Singleton):
 
 
     # @jit(target_backend='cpu', forceobj=True) # * ... {ToDo} Optimize MongoDB updates, then benchmark JIT
-    def save_phone_number(self, phone_number: str, country_code: str, operator_code: str, phone_number_suffix: str) -> Void:
+    def save_phone_number(self, database_entry: DatabaseEntry) -> Void:
         if self._disabled_persistence:
             return
 
         db_table: DatabaseCollection = self._get_db_table()
-        database_entry: DatabaseEntry = DatabaseEntry(
-            phone_number, country_code, operator_code, phone_number_suffix
-        )
-
         entity: dict = database_entry.schema()
-        db_table.update_one({"phone_number": phone_number}, {
+        db_table.update_one({"phone_number": entity["phone_number"]}, {
                             "$set": entity}, upsert=True)
+
+
+    def save_phone_numbers(self, entries: List[DatabaseEntry]):
+        # * ... {ToDo}
+        print(entries)
+        exit(0)
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:
