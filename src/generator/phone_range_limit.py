@@ -19,8 +19,8 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
     last_block_head_max_zeros = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
-    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION_VALUE and DEV_CONFIG.UNSAFE:
-        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION)
+    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION and DEV_CONFIG.UNSAFE:
+        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION_VALUE)
         return range_start
 
     if DEV_CONFIG.FORCED_RANGE_START >= 0 and DEV_CONFIG.UNSAFE:

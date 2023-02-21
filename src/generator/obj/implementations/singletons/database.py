@@ -95,10 +95,12 @@ class Database(metaclass=Singleton):
         if self._disabled_persistence:
             return
 
-        with ThreadPool() as pool:
-            pool.map(self.__save_phone_number, entries)
-        # for database_entry in entries:
-        #     self.__save_phone_number(database_entry)
+        if DEV_CONFIG.DISABLE_MULTITHREADING:
+            for database_entry in entries:
+                self.__save_phone_number(database_entry)
+        else:
+            with ThreadPool() as pool:
+                pool.map(self.__save_phone_number, entries)
 
         if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_DB_UPDATES:
             debug_logger("SAVED_CHUNK_IN_DATABASE")
