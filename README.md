@@ -28,5 +28,7 @@ This is probably not the most rigorous way to achieve the sake of this project.
 ### Dependencies
 
 - [pymongo](https://pypi.org/project/pymongo/)
-- Python 3.8.10
-- MongoDB
+- [Python 3.8.10](www.python.org/)
+- [MongoDB](https://www.mongodb.com/)
+- [numba](https://pypi.org/project/numba/)
+- CUDA

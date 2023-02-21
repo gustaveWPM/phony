@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from generator.obj.implementations.singletons.generator_base import GeneratorBase
+from generator.obj.implementations.prefix_data import PrefixData
 from generator.metaprog.types import Void
 from generator.sys.error import terminate
 from generator.debug.logger import debug_logger as debug_logger
@@ -10,7 +11,7 @@ import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 import generator.phone_range_limit as limit
 
 from typing import Optional, List
-from generator.obj.implementations.prefix_data import PrefixData
+from numba import jit
 
 
 class Generator(GeneratorBase):
@@ -31,6 +32,7 @@ class Generator(GeneratorBase):
         self._start_with_desk = value
 
 
+    @jit(target_backend='cuda', forceobj=True)
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
         prefix: str = country_code + cur_op_code
 
