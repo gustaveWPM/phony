@@ -79,9 +79,12 @@ class Generator(GeneratorBase):
         elif range_end < 0:
             terminate("Invalid range end value.")
         if range_end < range_start:
-            range_end = range_start + 1
+            range_end = range_start
         if range_start == range_end:
-            range_end += 1
+            if range_start == 0:
+                range_end = 1
+            else:
+                range_start -= 1
         r = range(range_start, range_end)
         return r
 
