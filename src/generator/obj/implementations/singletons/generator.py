@@ -70,6 +70,21 @@ class Generator(GeneratorBase):
                 if db_entries_counter > 0:
                     self._database.save_phone_numbers(db_entries_chunk)
 
+
+    # * ... Fixes potential issues related to the smart reload feature, terminates if invalid unsafe params.
+    def __sanitized_range(range_start: int, range_end: int) -> range:
+        if range_start < 0:
+            terminate("Invalid range start value.")
+        elif range_end < 0:
+            terminate("Invalid range end value.")
+        if range_end < range_start:
+            range_end = range_start + 1
+        if range_start == range_end:
+            range_end += 1
+        r = range(range_start, range_end)
+        return r
+
+
     def __do_generate_loop(self, country_code: str, op_codes: List[str], metadatas: Optional[dict]):
         for cur_op_code in op_codes:
             if self._is_banned_op_code(cur_op_code):
@@ -80,11 +95,7 @@ class Generator(GeneratorBase):
             magnitude = 10 ** (block_len - 1)
             range_end: int = limit.compute_range_end(cur_op_code)
             range_start: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
-            if range_start == -1:
-                terminate("Invalid range start value.")
-            elif range_end == -1:
-                terminate("Invalid range end value.")
-            r = range(range_start, range_end)
+            r = self.__sanitized_range(range_start, range_end)
             self.__do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
 
 
