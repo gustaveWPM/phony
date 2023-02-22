@@ -2,7 +2,7 @@
 
 
 from generator.obj.schemas.database_entry import DatabaseEntrySchema
-from generator.metaprog.types import Schema
+from generator.metaprog.types import WeakSchema
 
 
 class DatabaseEntry(DatabaseEntrySchema):
@@ -15,9 +15,6 @@ class DatabaseEntry(DatabaseEntrySchema):
         super().__init__(phone_number, country_code, operator_code, generated_suffix)
 
 
-    def schema(self) -> Schema:
+    # * ... Because of Pymongo's dynamic '_id' generation...
+    def schema(self) -> WeakSchema:
         return self._schema
-
-
-    def weak_schema(self) -> dict:
-        return self._schema.copy()
