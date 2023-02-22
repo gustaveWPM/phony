@@ -1,16 +1,16 @@
-# Phone numbers pools generator
+# ☎️ Phony
 
-Just a side project made for the fun.  
 **CAUTION: I am neither a telephony nor a Python pro** (this is my first Python script, lmao).  
-This is probably not the most rigorous way to achieve the sake of this project.
+This is probably not the most rigorous way to achieve the sake of this project.  
+Remember that it is just a side project made for the fun.  
 
 ## Features
 
 - Data Persistence (MongoDB)
 - Smart reload (Resumes at its last iteration)
 - Deterministic generation (Finite generator)
-- Unsafe mode (to force upserts on a specific pool interval)
-- Configurable generator:
+- Unsafe mode (don't use it without reading the code)
+- Configuration:
     - i18n configuration template
     - Country code
     - Operator codes
