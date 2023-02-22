@@ -8,6 +8,9 @@ PRINT_DB_UPDATES = False                  # * ... Default value is `False`
 
 
 BUGTRACKER_MSG = """Oh, you found a bug!
+You have most likely managed to find an invalid configuration that slips through the cracks during the config check.
+If this bug is reproducible with the same configuration, please tell me how you triggered it and provide configuration samples on the bugtracker:
 
-If you know how to reproduce it, please, tell me how you triggered it on the bugtracker:
-https://github.com/gustaveWPM/phone-number-generator/issues"""
+https://github.com/gustaveWPM/phony/issues
+
+And if it is not related to configuration but you know why you see this message, your contribution is also welcome (of course)."""
