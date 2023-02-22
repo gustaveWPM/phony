@@ -22,6 +22,3 @@ class Schema(dict):
             super().__setitem__(key, value)
 
     # * ... see: https://stackoverflow.com/questions/58009864/python-how-to-disable-creation-of-new-keys-in-attribute-dict
-
-
-WeakSchema = dict
