@@ -18,12 +18,12 @@ from typing import Optional, List
 class Generator(GeneratorBase):
     @staticmethod
     def __append_heading_zeros(number: int, ndigits: int, magnitude: int) -> str:
-        number_as_string: str = str(number)
+        number_as_string = str(number)
         if number >= magnitude:
             return number_as_string
-        number_len: int = len(number_as_string)
-        number_of_zeros_to_append: int = abs(ndigits - number_len)
-        phone_suffix: str = '0' * number_of_zeros_to_append + number_as_string
+        number_len = len(number_as_string)
+        number_of_zeros_to_append = abs(ndigits - number_len)
+        phone_suffix = '0' * number_of_zeros_to_append + number_as_string
         return phone_suffix
 
 
@@ -40,20 +40,17 @@ class Generator(GeneratorBase):
         db_entries_chunk: List[DatabaseEntry] = []
 
         for current_iteration in r:
-            cur_phone_number_suffix: str = self.__append_heading_zeros(
-                current_iteration, block_len, magnitude)
+            cur_phone_number_suffix: str = self.__append_heading_zeros(current_iteration, block_len, magnitude)
+            cur_phone_number = prefix + cur_phone_number_suffix
 
             if not self._reject_phone_number_suffix(cur_op_code, cur_phone_number_suffix):
-                cur_phone_number: str = prefix + cur_phone_number_suffix
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
                     debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
 
                 if self._database._disabled_persistence:
                     continue
 
-                database_entry: DatabaseEntry = DatabaseEntry(
-                    cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix
-                )
+                database_entry: DatabaseEntry = DatabaseEntry(cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix)
 
                 db_entries_chunk.append(database_entry)
                 db_entries_counter += 1
@@ -63,7 +60,6 @@ class Generator(GeneratorBase):
                     db_entries_counter = 0
 
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
-                cur_phone_number: str = prefix + cur_phone_number_suffix
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
 
             if current_iteration == last_iteration:
@@ -85,6 +81,7 @@ class Generator(GeneratorBase):
                 range_end = 1
             else:
                 range_start -= 1
+
         r = range(range_start, range_end)
         return r
 
@@ -96,7 +93,7 @@ class Generator(GeneratorBase):
                     debug_logger("REJECTED_OPERATOR_CODE", cur_op_code)
                 continue
             block_len: int = limit.compute_range_len(cur_op_code)
-            magnitude = 10 ** (block_len - 1)
+            magnitude: int = 10 ** (block_len - 1)
             range_end: int = limit.compute_range_end(cur_op_code)
             range_start: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
             r = self.__sanitized_range(range_start, range_end)

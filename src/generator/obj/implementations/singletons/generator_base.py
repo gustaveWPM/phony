@@ -37,29 +37,24 @@ class GeneratorBase(metaclass=Singleton):
 
 
     def _reject_phone_number_suffix(self, op_code: str, phone_number_suffix: str) -> bool:
-        last_block_head_max_zeros: int = self._last_block_head_max_zeros
-        same_digit_threshold: int = self._same_digit_threshold
-        consecutive_same_digit_threshold: int = self._consecutive_same_digit_threshold
-        digits: str = "0123456789"
+        digits = "0123456789"
+        banned_pattern = '0' * (self._last_block_head_max_zeros + 1)
         whole_phone_number: str = op_code + phone_number_suffix
-        banned_pattern: str = ''
-        banned_op_codes: List[str] = self._banned_op_codes
 
-        banned_pattern = '0' * (last_block_head_max_zeros + 1)
         if phone_number_suffix.startswith(banned_pattern):
             return True
 
-        for banned_pattern in banned_op_codes:
+        for banned_pattern in self._banned_op_codes:
             if banned_pattern == '':
                 break
             if whole_phone_number.startswith(banned_pattern):
                 return True
 
         for digit in digits:
-            if whole_phone_number.count(digit) > same_digit_threshold:
+            if whole_phone_number.count(digit) > self._same_digit_threshold:
                 return True
-            if consecutive_same_digit_threshold > 0:
-                banned_pattern = digit * (consecutive_same_digit_threshold + 1)
+            if self._consecutive_same_digit_threshold > 0:
+                banned_pattern: str = digit * (self._consecutive_same_digit_threshold + 1)
                 if banned_pattern in whole_phone_number:
                     return True
         return False

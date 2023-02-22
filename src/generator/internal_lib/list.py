@@ -2,7 +2,7 @@
 
 
 from functools import reduce
-from typing import List
+from typing import List, Callable
 
 
 def flatten(l: list) -> list:
@@ -12,10 +12,9 @@ def flatten(l: list) -> list:
 
 
 def uniq(l: list) -> list:
-    l_uniq = reduce(lambda re, x: re+[x] if x not in re else re, l, [])
-    return l_uniq
+    return list(dict.fromkeys(l))
 
-    # * ... see: https://www.geeksforgeeks.org/python-get-unique-values-list/
+    # * ... see: https://stackoverflow.com/questions/1653970/does-python-have-an-ordered-set
 
 
 def reverse(l: list) -> list:
@@ -24,7 +23,7 @@ def reverse(l: list) -> list:
 
 
 def to_strlist(l: list) -> list:
-    l_to_strlist: List[str] = [str(c) for c in l]
+    l_to_strlist: List[str] = [str(v) for v in l]
     return l_to_strlist
 
 
