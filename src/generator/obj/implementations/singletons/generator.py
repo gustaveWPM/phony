@@ -92,6 +92,11 @@ class Generator(GeneratorBase):
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
                     debug_logger("REJECTED_OPERATOR_CODE", cur_op_code)
                 continue
+
+            reload_metas: dict = self._database._retrieve_last_phone_number_entry_with_op_code(cur_op_code)
+            if self._skip_op_code_range_generation(reload_metas):
+                continue
+
             block_len: int = limit.compute_range_len(cur_op_code)
             magnitude: int = 10 ** (block_len - 1)
             range_end: int = limit.compute_range_end(cur_op_code)
@@ -148,7 +153,7 @@ class Generator(GeneratorBase):
         prefix_data = self._prefix_data
         reload_metas = self._database.retrieve_last_saved_phone_metadatas()
 
-        if self._skip_generation(reload_metas):
+        if self._skip_whole_generation(reload_metas):
             terminate(DEBUG_VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"], 0)
 
         if DEV_CONFIG.FORCED_OPERATOR_CODES and DEV_CONFIG.UNSAFE:

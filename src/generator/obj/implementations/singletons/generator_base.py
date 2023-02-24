@@ -58,7 +58,13 @@ class GeneratorBase(metaclass=Singleton):
         return False
 
 
-    def _skip_generation(self, data: Optional[dict]) -> bool:
+    def _skip_op_code_range_generation(self, data: Optional[dict]) -> bool:
+        if data is None:
+            return False
+        return self._database.is_finite_op_code_collection(data)
+
+
+    def _skip_whole_generation(self, data: Optional[dict]) -> bool:
         if data is None:
             return False
         return self._database.is_finite_collection(data)

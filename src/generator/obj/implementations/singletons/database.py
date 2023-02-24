@@ -48,15 +48,31 @@ class Database(metaclass=Singleton):
         return True
 
 
+    @staticmethod
+    def is_finite_op_code_collection(data: dict) -> bool:
+        for key in data:
+            if data[key] == "-1":
+                return True
+        return False
+
+
     def _get_db_table(self) -> DatabaseCollection:
         return self._db[self._db_table_key]
 
 
     def _retrieve_last_saved_phone_number_entry(self) -> Optional[dict]:
         db_table: DatabaseCollection = self._get_db_table()
-
         try:
-            d: dict = db_table.find_one(sort=[("_id", pymongo.DESCENDING)])
+            d: dict = db_table.find_one('_id', pymongo.DESCENDING)
+            return d
+        except:
+            return None
+
+
+    def _retrieve_last_phone_number_entry_with_op_code(self, op_code: str) -> Optional[dict]:
+        db_table: DatabaseCollection = self._get_db_table()
+        try:
+            d: dict = db_table.find({"operator_code": op_code}).sort('_id', pymongo.DESCENDING).limit(1)[0]
             return d
         except:
             return None
@@ -114,9 +130,9 @@ class Database(metaclass=Singleton):
 
     def append_finite_collection_indicator(self) -> Void:
         db_entry = DatabaseEntry("-1", "-1", "-1", "-1")
-        self.save_phone_number(db_entry)
+        self.__save_phone_number(db_entry)
 
 
     def append_finite_op_code_range_indicator(self, op_code: str) -> Void:
         db_entry = DatabaseEntry("-1", "-1", op_code, "-1")
-        self.save_phone_number(db_entry)
+        self.__save_phone_number(db_entry)
