@@ -113,4 +113,10 @@ class Database(metaclass=Singleton):
 
 
     def append_finite_collection_indicator(self) -> Void:
-        self.save_phone_number("-1", "-1", "-1", "-1")
+        db_entry = DatabaseEntry("-1", "-1", "-1", "-1")
+        self.save_phone_number(db_entry)
+
+
+    def append_finite_op_code_range_indicator(self, op_code: str) -> Void:
+        db_entry = DatabaseEntry("-1", "-1", op_code, "-1")
+        self.save_phone_number(db_entry)

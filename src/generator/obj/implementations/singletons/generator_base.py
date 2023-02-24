@@ -6,6 +6,7 @@ import generator.config.builders.generator as generator_config_builder
 import generator.config.validator as config_validator
 from generator.obj.implementations.prefix_data import PrefixData
 from generator.obj.implementations.singletons.database import Database
+from generator.obj.implementations.singletons.generation_decks import GenerationDecks
 from generator.metaprog.singleton import Singleton
 
 
@@ -28,9 +29,7 @@ class GeneratorBase(metaclass=Singleton):
 
 
     def _is_banned_op_code(self, op_code: str) -> bool:
-        banned_op_codes: List[str] = self._banned_op_codes
-
-        for cur_banned_op_code in banned_op_codes:
+        for cur_banned_op_code in self._banned_op_codes:
             if op_code == cur_banned_op_code:
                 return True
         return False

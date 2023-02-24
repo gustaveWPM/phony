@@ -65,7 +65,7 @@ class Generator(GeneratorBase):
             if current_iteration == last_iteration:
                 if db_entries_counter > 0:
                     self._database.save_phone_numbers(db_entries_chunk)
-
+                self._database.append_finite_op_code_range_indicator(cur_op_code)
 
     # * ... Fixes potential issues related to the smart reload feature, terminates if invalid unsafe params.
     @staticmethod
