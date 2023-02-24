@@ -40,7 +40,7 @@ class Generator(GeneratorBase):
     @staticmethod
     def __compute_db_entries_counter_max():
         db_entries_counter_max = DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE
-        if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA != 0:
+        if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA > 0:
             db_entries_counter_max -= random.randint(0, DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA)
         return db_entries_counter_max
 
@@ -52,6 +52,7 @@ class Generator(GeneratorBase):
         db_entries_counter = 0
         db_entries_counter_max = self.__compute_db_entries_counter_max()
         db_chunks_counter = 0
+        db_chunks_counter_max = DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE
 
         for current_iteration in r:
             cur_phone_number_suffix: str = self.__append_heading_zeros(current_iteration, block_len, magnitude)
@@ -70,7 +71,7 @@ class Generator(GeneratorBase):
                     db_chunks_counter += 1
                     db_entries_counter = 0
                     db_entries_counter_max = self.__compute_db_entries_counter_max()
-                    if not DEV_CONFIG.DISABLE_SHUFFLE and db_chunks_counter >= DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE:
+                    if not DEV_CONFIG.DISABLE_SHUFFLE and db_chunks_counter_max > 0 and db_chunks_counter >= db_chunks_counter_max:
                         break
 
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
