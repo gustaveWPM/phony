@@ -6,7 +6,6 @@ import generator.config.builders.generator as generator_config_builder
 import generator.config.validator as config_validator
 from generator.obj.implementations.prefix_data import PrefixData
 from generator.obj.implementations.singletons.database import Database
-from generator.obj.implementations.singletons.generation_decks import GenerationDecks
 from generator.metaprog.singleton import Singleton
 
 
