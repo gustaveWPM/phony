@@ -1,7 +1,7 @@
 # coding: utf-8
 
 
-from generator.metaprog.types import Void, Schema
+from generator.metaprog.types import Schema
 
 from typing import List
 
@@ -12,16 +12,18 @@ class PrefixDataSchema():
         operator_desk_codes: List[str],
         operator_mobile_codes: List[str]
     ):
-        self.__country_code = country_code
-        self.__build_schema(operator_desk_codes, operator_mobile_codes)
+        self._schema = self.__build_schema(country_code, operator_desk_codes, operator_mobile_codes)
 
 
-    def __build_schema(self, operator_desk_codes, operator_mobile_codes) -> Void:
-        schema = Schema({
-            "country_code": self.__country_code,
+    def __build_schema(self,
+        country_code,
+        operator_desk_codes,
+        operator_mobile_codes
+    ) -> Schema:
+        return Schema({
+            "country_code": country_code,
             "operator_codes": {
                 "desk": operator_desk_codes,
                 "mobile": operator_mobile_codes
             }
         })
-        self._schema = schema

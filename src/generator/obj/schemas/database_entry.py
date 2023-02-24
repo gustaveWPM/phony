@@ -11,7 +11,7 @@ class DatabaseEntrySchema():
         operator_code: str,
         generated_suffix: str
     ):
-        self._schema: Schema = self.__build_schema(phone_number, country_code, operator_code, generated_suffix)
+        self._schema = self.__build_schema(phone_number, country_code, operator_code, generated_suffix)
 
     # * ... Because of Pymongo's dynamic '_id' generation...
     def __build_schema(self,
