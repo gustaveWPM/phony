@@ -12,13 +12,17 @@ Remember that it is just a side project made for the fun.
     - i18n configuration template
     - Country code
     - Operator codes
-    - Operator codes order shuffling
     - Fine-tuning rules:
         - Phone number length
         - Same digit threshold
         - Consecutive same digit threshold
         - Max heading zeros (at the beginning of the pseudo-randomly generated block)
         - Banned operator codes
+    - Pseudo randomization:
+        - Shuffle operator codes
+        - Pick a new random operator code all the _x_ database chunk creation.
+        - Randomize database entries chunks' size
+
 
 ## How to run
 
