@@ -11,18 +11,19 @@ class DatabaseEntrySchema():
         operator_code: str,
         generated_suffix: str
     ):
-        self.__phone_number: str = phone_number
-        self.__country_code: str = country_code
-        self.__operator_code: str = operator_code
-        self.__generated_suffix: str = generated_suffix
-        self._schema: WeakSchema = self.__build_schema()
+        self._schema: WeakSchema = self.__build_schema(phone_number, country_code, operator_code, generated_suffix)
 
 
     # * ... Because of Pymongo's dynamic '_id' generation...
-    def __build_schema(self) -> WeakSchema:
+    def __build_schema(self,
+        phone_number: str,
+        country_code: str,
+        operator_code: str,
+        generated_suffix: str
+    ) -> WeakSchema:
         return WeakSchema({
-            "phone_number": self.__phone_number,
-            "country_code": self.__country_code,
-            "operator_code": self.__operator_code,
-            "generated_suffix": self.__generated_suffix
+            "phone_number": int(phone_number),
+            "country_code": country_code,
+            "operator_code": operator_code,
+            "generated_suffix": generated_suffix
         })

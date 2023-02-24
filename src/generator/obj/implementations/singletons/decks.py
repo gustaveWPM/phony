@@ -26,10 +26,12 @@ class Decks(metaclass=Singleton):
 
     def __eject_banned_cards(self):
         for banned_code in self.__banned_op_codes:
-            if banned_code in self._deck_a:
-                self._deck_a.remove(banned_code)
-            if banned_code in self._deck_b:
-                self._deck_b.remove(banned_code)
+            for card_label in self._deck_a:
+                if card_label.startswith(banned_code):
+                    self._deck_a.remove(card_label)
+            for card_label in self._deck_b:
+                if card_label.startswith(banned_code):
+                    self._deck_b.remove(card_label)
 
 
     def __build_decks(self, prefix_data: PrefixData, start_with_desk: bool):

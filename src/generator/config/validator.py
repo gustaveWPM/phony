@@ -17,12 +17,20 @@ _MSG_PREFIX = "[CONFIGURATION ERROR]"
 _STARTED_MSG = "Generation started..."
 
 
+def _check_max_db_chunks_records_before_shuffle() -> Void:
+    if DEV_CONFIG.DISABLE_SHUFFLE:
+        return
+
+    if DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE <= 0:
+        terminate(f"{_MSG_PREFIX} 'MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE' should be greater than 0.")
+
+
 def _check_db_entries_chunk_size() -> Void:
     if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE <= 0:
         terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE' should be greater than 0.")
 
 
-def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
+def __check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
     groups: list = str_groupby(op_code)
 
     for same_consecutive_digit in [d[1] for d in groups]:
@@ -31,7 +39,7 @@ def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
     return True
 
 
-def _do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
+def __do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
     has_failed = False
     respect_same_digit_rule = True
 
@@ -41,7 +49,7 @@ def _do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
         if block_len < 0:
             has_failed = True
             print_on_stderr(f"{_MSG_PREFIX} Found a bigger operator code than NDIGITS: {cur_op_code}")
-        respect_same_digit_rule = _check_op_code_respects_same_digit_rule(config, cur_op_code)
+        respect_same_digit_rule = __check_op_code_respects_same_digit_rule(config, cur_op_code)
         if not respect_same_digit_rule:
             has_failed = True
             print_on_stderr(f"{_MSG_PREFIX} Too much consecutive same digit in your op code: {cur_op_code}")
@@ -57,11 +65,11 @@ def _check_op_codes(config: dict) -> Void:
     make_crash = False
     has_failed = False
 
-    has_failed = _do_check_op_codes(config, op_codes_a)
+    has_failed = __do_check_op_codes(config, op_codes_a)
     if has_failed:
         make_crash = True
 
-    has_failed = _do_check_op_codes(config, op_codes_b)
+    has_failed = __do_check_op_codes(config, op_codes_b)
     if has_failed:
         make_crash = True
 
@@ -118,6 +126,7 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
+    _check_max_db_chunks_records_before_shuffle()
     _check_db_entries_chunk_size()
     _check_ndigit(config)
     _check_same_digit_threshold(config)

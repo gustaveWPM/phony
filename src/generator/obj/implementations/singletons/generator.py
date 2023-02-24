@@ -47,6 +47,7 @@ class Generator(GeneratorBase):
         db_entries_chunk: List[DatabaseEntry] = []
         last_iteration = r[-1]
         db_entries_counter = 0
+        db_chunks_counter = 0
 
         for current_iteration in r:
             cur_phone_number_suffix: str = self.__append_heading_zeros(current_iteration, block_len, magnitude)
@@ -62,7 +63,10 @@ class Generator(GeneratorBase):
                 if db_entries_counter >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE:
                     self._database.save_phone_numbers(db_entries_chunk)
                     db_entries_chunk = []
+                    db_chunks_counter += 1
                     db_entries_counter = 0
+                    if not DEV_CONFIG.DISABLE_SHUFFLE and db_chunks_counter >= DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE:
+                        break
 
             elif DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_PHONE_NUMBERS:
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
