@@ -56,11 +56,7 @@ class Generator(GeneratorBase):
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_GENERATED_PHONE_NUMBERS:
                     debug_logger("GENERATED_PHONE_NUMBER", f"{cur_phone_number} ; op_code: {cur_op_code}")
 
-                if self._database._disabled_persistence:
-                    continue
-
                 database_entry: DatabaseEntry = DatabaseEntry(cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix)
-
                 db_entries_chunk.append(database_entry)
                 db_entries_counter += 1
                 if db_entries_counter >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE:

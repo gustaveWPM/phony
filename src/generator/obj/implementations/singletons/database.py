@@ -27,9 +27,6 @@ class Database(metaclass=Singleton):
 
         def initialize(self) -> Void:
             build_config(DATABASE_CONFIG)
-            self._disabled_persistence = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
-            if self._disabled_persistence:
-                return
             self._mongo_client = pymongo.MongoClient(DATABASE_CONFIG["MONGO_DB_CONNECTION_URI"])
             self._db_name_key = DATABASE_CONFIG["MONGO_DB_NAME"]
             self._db = self._mongo_client[self._db_name_key]
@@ -72,7 +69,7 @@ class Database(metaclass=Singleton):
     def _retrieve_last_phone_number_entry_with_op_code(self, op_code: str) -> Optional[dict]:
         db_table: DatabaseCollection = self._get_db_table()
         try:
-            d: dict = db_table.find({"operator_code": op_code}).sort('_id', pymongo.DESCENDING).limit(1)[0]
+            d: dict = db_table.find({"operator_code": op_code}).sort("phone_number", pymongo.DESCENDING).limit(1)[0]
             return d
         except:
             return None
@@ -97,9 +94,6 @@ class Database(metaclass=Singleton):
 
 
     def save_phone_numbers(self, entries: List[DatabaseEntry]) -> Void:
-        if self._disabled_persistence:
-            return
-
         if DEV_CONFIG.ALLOW_DUPLICATES:
             self.__weak_save_phone_numbers(entries)
 
@@ -116,8 +110,6 @@ class Database(metaclass=Singleton):
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:
-        if self._disabled_persistence:
-            return None
         entry: Optional[dict] = self._retrieve_last_saved_phone_number_entry()
         if entry is None:
             return None

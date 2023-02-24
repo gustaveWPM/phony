@@ -6,7 +6,7 @@ from generator.obj.implementations.prefix_data import PrefixData
 import generator.config.rules.dev.generator as DEV_CONFIG
 
 
-from typing import List
+from typing import List, Optional
 
 
 class Decks(metaclass=Singleton):
@@ -24,3 +24,16 @@ class Decks(metaclass=Singleton):
         else:
             self._deck_a = prefix_data.operator_mobile_codes()
             self._deck_b = prefix_data.operator_desk_codes()
+
+
+    def pick_in_deck(self) -> Optional[str]:
+        pick_again = False
+        if self._deck_a != []:
+            pass
+        elif self._deck_b != []:
+            pass
+        else:
+            return None
+
+        if pick_again:
+            return self.pick_in_deck()

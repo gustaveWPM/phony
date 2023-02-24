@@ -2,10 +2,8 @@
 
 
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
-from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 import generator.config.rules.dev.generator as DEV_CONFIG
 from generator.sys.error import terminate, print_on_stderr
-from generator.sys.prompt import choice_prompt, ConfirmChoice
 from generator.internal_lib.str import str_groupby
 import generator.obj.implementations.countries as countries_service
 from generator.obj.implementations.prefix_data import PrefixData
@@ -17,12 +15,6 @@ from typing import List
 
 _MSG_PREFIX = "[CONFIGURATION ERROR]"
 _STARTED_MSG = "Generation started..."
-
-
-def _check_shuffle_feature() -> Void:
-    if DATABASE_CONFIG["DISABLE_PERSISTENCE"] and not DEV_CONFIG.DISABLE_SHUFFLE:
-        terminate(f"{_MSG_PREFIX} 'DISABLE_SHUFFLE' is setted to False, but 'DISABLE_PERSISTENCE' is setted to True.\n"
-        "Shuffle feature is persistence-dependant. You can't shuffle without the persistence enabled.")
 
 
 def _check_db_entries_chunk_size() -> Void:
@@ -126,7 +118,6 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
-    _check_shuffle_feature()
     _check_db_entries_chunk_size()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
