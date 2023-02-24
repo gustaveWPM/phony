@@ -4,7 +4,6 @@
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 import generator.config.rules.dev.generator as DEV_CONFIG
 from generator.sys.error import terminate, print_on_stderr
-from generator.sys.prompt import choice_prompt, ConfirmChoice
 from generator.internal_lib.str import str_groupby
 import generator.obj.implementations.countries as countries_service
 from generator.obj.implementations.prefix_data import PrefixData
@@ -12,13 +11,25 @@ from generator.metaprog.types import Void
 
 
 from typing import List
-import time
 
 
 _MSG_PREFIX = "[CONFIGURATION ERROR]"
-_YOU_SHOULDNT_HAVE_DONE_THAT = "You shouldn't have done that..."
-_STARTING_MSG = "Starting generator..."
 _STARTED_MSG = "Generation started..."
+
+
+def _check_shuffle() -> Void:
+    if DEV_CONFIG.DISABLE_SHUFFLE:
+        return
+
+    if DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE <= 0:
+        terminate(f"{_MSG_PREFIX} 'MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE' should be greater than 0.")
+
+    if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE - 1:
+        terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA' should be less than DB_ENTRIES_CHUNK_SIZE - 1.")
+
+    if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA < 0:
+        terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA' should be greater than or equal to 0.")
+
 
 
 def _check_db_entries_chunk_size() -> Void:
@@ -26,26 +37,7 @@ def _check_db_entries_chunk_size() -> Void:
         terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE' should be greater than 0.")
 
 
-def _check_allow_duplicates() -> Void:
-    if DEV_CONFIG.ALLOW_DUPLICATES and DEV_CONFIG.DISABLE_SMART_RELOAD:
-        if not DEV_CONFIG.UNSAFE:
-            terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
-        else:
-            try:
-                msg = f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True."
-                response: ConfirmChoice = choice_prompt(msg, ConfirmChoice, ConfirmChoice.REJECT, autoconfirm_key="CONFIGURATION_ERROR")
-                if response == ConfirmChoice.REJECT:
-                    terminate()
-                else:
-                    print(_YOU_SHOULDNT_HAVE_DONE_THAT)
-                    time.sleep(3)
-                    print(_STARTING_MSG)
-                    time.sleep(2)
-            except EOFError:
-                terminate()
-
-
-def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
+def __check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
     groups: list = str_groupby(op_code)
 
     for same_consecutive_digit in [d[1] for d in groups]:
@@ -54,7 +46,7 @@ def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
     return True
 
 
-def _do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
+def __do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
     has_failed = False
     respect_same_digit_rule = True
 
@@ -64,7 +56,7 @@ def _do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
         if block_len < 0:
             has_failed = True
             print_on_stderr(f"{_MSG_PREFIX} Found a bigger operator code than NDIGITS: {cur_op_code}")
-        respect_same_digit_rule = _check_op_code_respects_same_digit_rule(config, cur_op_code)
+        respect_same_digit_rule = __check_op_code_respects_same_digit_rule(config, cur_op_code)
         if not respect_same_digit_rule:
             has_failed = True
             print_on_stderr(f"{_MSG_PREFIX} Too much consecutive same digit in your op code: {cur_op_code}")
@@ -80,11 +72,11 @@ def _check_op_codes(config: dict) -> Void:
     make_crash = False
     has_failed = False
 
-    has_failed = _do_check_op_codes(config, op_codes_a)
+    has_failed = __do_check_op_codes(config, op_codes_a)
     if has_failed:
         make_crash = True
 
-    has_failed = _do_check_op_codes(config, op_codes_b)
+    has_failed = __do_check_op_codes(config, op_codes_b)
     if has_failed:
         make_crash = True
 
@@ -141,8 +133,8 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
+    _check_shuffle()
     _check_db_entries_chunk_size()
-    _check_allow_duplicates()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
     _check_head_max_zeros(config)

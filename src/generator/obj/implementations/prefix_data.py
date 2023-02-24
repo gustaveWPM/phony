@@ -34,5 +34,5 @@ class PrefixData(PrefixDataSchema):
 
 
     def force_operator_codes(self, data: List[str]):
-        self._operator_desk_codes = []
-        self._operator_mobile_codes = data
+        self.operator_desk_codes(data)
+        self.operator_mobile_codes(data)

@@ -4,8 +4,11 @@
 from generator.metaprog.types import Schema
 
 
-DB_ENTRIES_CHUNK_SIZE = 50000                   # * ... Default value is `50000`
+DISABLE_SHUFFLE = False                         # * ... Default value is `False`
+MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE = 3        # * ... Default value is `3`. Set it to `0` to disable this feature.
 DISABLE_MULTITHREADING = False                  # * ... Default value is `False`
+DB_ENTRIES_CHUNK_SIZE = 50000                   # * ... Default value is `50000`
+DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA = 49000      # * ... Default value is `49000`. Set it to `0` to disable this feature.
 ALLOW_DUPLICATES = False                        # * ... Default value is `False`
 
 DEBUG_MODE = False                              # * ... Default value is `False`
@@ -19,14 +22,7 @@ DEBUG_MODE = False                              # * ... Default value is `False`
 
 
 UNSAFE = False                                  # * ... Default value is `False`
-DISABLE_SMART_RELOAD = False                    # * ... Default value is `False`
-FORCE_VERY_FIRST_ITERATION = False              # * ... Default value is `False`
 
-FORCED_VERY_FIRST_ITERATION_VALUE: str = "0"    # * ... Default value is `"0"`
-FORCED_RANGE_START: int = -1                    # * ... Default value is `-1`
-FORCED_RANGE_END: int = -1                      # * ... Default value is `-1`
 FORCED_OPERATOR_CODES: list = []                # * ... Default value is `[]`
 
-AUTOCONFIRM_PROMPTS = Schema({
-    "CONFIGURATION_ERROR": False                # * ... Default value is `False`
-})
+AUTOCONFIRM_PROMPTS = Schema({})                # * ... Unused feature atm

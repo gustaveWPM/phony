@@ -27,15 +27,6 @@ class GeneratorBase(metaclass=Singleton):
         config_validator.check_config(GENERATOR_CONFIG)
 
 
-    def _is_banned_op_code(self, op_code: str) -> bool:
-        banned_op_codes: List[str] = self._banned_op_codes
-
-        for cur_banned_op_code in banned_op_codes:
-            if op_code == cur_banned_op_code:
-                return True
-        return False
-
-
     def _reject_phone_number_suffix(self, op_code: str, phone_number_suffix: str) -> bool:
         digits = "0123456789"
         banned_pattern = '0' * (self._last_block_head_max_zeros + 1)
@@ -60,7 +51,7 @@ class GeneratorBase(metaclass=Singleton):
         return False
 
 
-    def _skip_generation(self, data: Optional[dict]) -> bool:
+    def _skip_whole_generation(self, data: Optional[dict]) -> bool:
         if data is None:
             return False
         return self._database.is_finite_collection(data)

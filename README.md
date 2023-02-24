@@ -7,13 +7,12 @@ Remember that it is just a side project made for the fun.
 ## Features
 
 - Data Persistence (MongoDB)
-- Smart reload (Resumes at its last iteration)
 - Deterministic generation (Finite generator)
-- Unsafe mode (don't use it without reading the code)
 - Configuration:
     - i18n configuration template
     - Country code
     - Operator codes
+    - Operator codes order shuffling
     - Fine-tuning rules:
         - Phone number length
         - Same digit threshold

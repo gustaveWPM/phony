@@ -7,7 +7,6 @@ from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 from generator.debug.logger import debug_logger
 from generator.config.builders.database import append_dynamic_conf as build_config
 from generator.obj.implementations.database_entry import DatabaseEntry
-from generator.obj.implementations.metadatas import Metadatas
 from generator.metaprog.singleton import Singleton
 from generator.metaprog.types import Void
 
@@ -27,9 +26,6 @@ class Database(metaclass=Singleton):
 
         def initialize(self) -> Void:
             build_config(DATABASE_CONFIG)
-            self._disabled_persistence = DATABASE_CONFIG["DISABLE_PERSISTENCE"]
-            if self._disabled_persistence:
-                return
             self._mongo_client = pymongo.MongoClient(DATABASE_CONFIG["MONGO_DB_CONNECTION_URI"])
             self._db_name_key = DATABASE_CONFIG["MONGO_DB_NAME"]
             self._db = self._mongo_client[self._db_name_key]
@@ -48,15 +44,40 @@ class Database(metaclass=Singleton):
         return True
 
 
+    @staticmethod
+    def is_finite_op_code_range(data: dict) -> bool:
+        for key in data:
+            if data[key] == "-1":
+                return True
+        return False
+
+
     def _get_db_table(self) -> DatabaseCollection:
         return self._db[self._db_table_key]
 
 
     def _retrieve_last_saved_phone_number_entry(self) -> Optional[dict]:
         db_table: DatabaseCollection = self._get_db_table()
-
         try:
-            d: dict = db_table.find_one(sort=[("_id", pymongo.DESCENDING)])
+            d: dict = db_table.find_one('_id', pymongo.DESCENDING)
+            return d
+        except:
+            return None
+
+
+    def _retrieve_last_phone_number_entry_with_op_code(self, op_code: str) -> Optional[dict]:
+        db_table: DatabaseCollection = self._get_db_table()
+        try:
+            d: dict = db_table.find({"operator_code": op_code}).sort("phone_number", pymongo.DESCENDING).limit(1)[0]
+            return d
+        except:
+            return None
+
+
+    def _retrieve_op_code_range_finite_indicator(self, op_code: str) -> Optional[dict]:
+        db_table: DatabaseCollection = self._get_db_table()
+        try:
+            d: dict = db_table.find_one({"operator_code": op_code, "phone_number": "-1"})
             return d
         except:
             return None
@@ -80,14 +101,11 @@ class Database(metaclass=Singleton):
         db_table.insert_many(entries)
 
 
-    def save_phone_numbers(self, entries: List[DatabaseEntry]) -> Void:
-        if self._disabled_persistence:
-            return
-
+    def save_phone_numbers(self, entries: List[DatabaseEntry], force_disable_multithreading = False) -> Void:
         if DEV_CONFIG.ALLOW_DUPLICATES:
             self.__weak_save_phone_numbers(entries)
 
-        elif DEV_CONFIG.DISABLE_MULTITHREADING:
+        elif DEV_CONFIG.DISABLE_MULTITHREADING or force_disable_multithreading:
             for database_entry in entries:
                 self.__save_phone_number(database_entry)
 
@@ -100,17 +118,17 @@ class Database(metaclass=Singleton):
 
 
     def retrieve_last_saved_phone_metadatas(self) -> Optional[dict]:
-        if self._disabled_persistence:
-            return None
         entry: Optional[dict] = self._retrieve_last_saved_phone_number_entry()
         if entry is None:
             return None
-        suffix = entry["generated_suffix"]
-        country_code = entry["country_code"]
-        operator_code = entry["operator_code"]
-        metadatas = Metadatas(suffix, country_code, operator_code)
-        return metadatas.schema()
+        return entry
 
 
     def append_finite_collection_indicator(self) -> Void:
-        self.save_phone_number("-1", "-1", "-1", "-1")
+        db_entry = DatabaseEntry("-1", "-1", "-1", "-1")
+        self.__save_phone_number(db_entry)
+
+
+    def append_finite_op_code_range_indicator(self, op_code: str) -> Void:
+        db_entry = DatabaseEntry("-1", "-1", op_code, "-1")
+        self.__save_phone_number(db_entry)
