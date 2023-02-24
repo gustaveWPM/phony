@@ -36,17 +36,12 @@ def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     return prefix_data
 
 
-def _generate_prefix_data(target: dict) -> PrefixData:
+def _append_prefix_data(target: dict) -> PrefixData:
     country: str = target["COUNTRY"]
     options: dict = target["OPTIONS"]
 
     on_build_check_targeted_country(country)
     return _do_generate_prefix_data(country, options)
-
-
-def _append_prefix_data(target: dict) -> PrefixData:
-    prefix_data = _generate_prefix_data(target)
-    return prefix_data
 
 
 def append_dynamic_conf(conf: dict) -> Void:
