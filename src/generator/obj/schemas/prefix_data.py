@@ -13,17 +13,15 @@ class PrefixDataSchema():
         operator_mobile_codes: List[str]
     ):
         self.__country_code = country_code
-        self._operator_desk_codes = operator_desk_codes
-        self._operator_mobile_codes = operator_mobile_codes
-        self.__build_schema()
+        self.__build_schema(operator_desk_codes, operator_mobile_codes)
 
 
-    def __build_schema(self) -> Void:
+    def __build_schema(self, operator_desk_codes, operator_mobile_codes) -> Void:
         schema = Schema({
             "country_code": self.__country_code,
             "operator_codes": {
-                "desk": self._operator_desk_codes,
-                "mobile": self._operator_mobile_codes
+                "desk": operator_desk_codes,
+                "mobile": operator_mobile_codes
             }
         })
         self._schema = schema

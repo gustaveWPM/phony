@@ -22,14 +22,6 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
     last_block_head_max_zeros = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
-    if DEV_CONFIG.FORCE_VERY_FIRST_ITERATION and DEV_CONFIG.UNSAFE:
-        range_start = int(DEV_CONFIG.FORCED_VERY_FIRST_ITERATION_VALUE)
-        return range_start
-
-    if DEV_CONFIG.FORCED_RANGE_START >= 0 and DEV_CONFIG.UNSAFE:
-        range_start = DEV_CONFIG.FORCED_RANGE_START
-        return range_start
-
     if metadatas is not None and not DEV_CONFIG.DISABLE_SMART_RELOAD:
         range_start = int(metadatas["phone_number_suffix"]) + 1
         return range_start
@@ -109,10 +101,6 @@ def _do_compute_range_end(op_code: str, block_len: int) -> int:
 def compute_range_end(op_code: str) -> int:
     range_end = 0
     block_len: int = compute_range_len(op_code)
-
-    if DEV_CONFIG.FORCED_RANGE_END >= 0 and DEV_CONFIG.UNSAFE:
-        range_end = DEV_CONFIG.FORCED_RANGE_END
-        return range_end
 
     if block_len == 0:
         range_end = int(op_code) + 1

@@ -13,13 +13,12 @@ class MetadatasSchema():
         self.__phone_number_suffix: str = phone_number_suffix
         self.__phone_number_country_code: str = phone_number_country_code
         self.__phone_number_operator_code: str = phone_number_operator_code
-        self.__build_schema()
+        self._schema: Schema = self.__build_schema()
 
 
-    def __build_schema(self) -> Void:
-        schema = Schema({
+    def __build_schema(self) -> Schema:
+        return Schema({
             "phone_number_suffix": self.__phone_number_suffix,
             "phone_number_country_code": self.__phone_number_country_code,
             "phone_number_operator_code": self.__phone_number_operator_code
         })
-        self._schema = schema
