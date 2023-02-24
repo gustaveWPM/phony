@@ -1,7 +1,7 @@
 # coding: utf-8
 
 
-from generator.metaprog.types import Void, WeakSchema
+from generator.metaprog.types import WeakSchema
 
 
 class DatabaseEntrySchema():
@@ -12,7 +12,6 @@ class DatabaseEntrySchema():
         generated_suffix: str
     ):
         self._schema: WeakSchema = self.__build_schema(phone_number, country_code, operator_code, generated_suffix)
-
 
     # * ... Because of Pymongo's dynamic '_id' generation...
     def __build_schema(self,

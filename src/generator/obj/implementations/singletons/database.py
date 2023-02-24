@@ -86,17 +86,17 @@ class Database(metaclass=Singleton):
     def __save_phone_number(*args) -> Void:
         self_instance, database_entry = args
         db_table: DatabaseCollection = self_instance._get_db_table()
-        entry_schema: dict = database_entry.schema()
+        entry_schema: dict = database_entry.weak_schema()
 
         if DEV_CONFIG.ALLOW_DUPLICATES:
             db_table.insert_one(entry_schema)
         else:
             db_table.update_one({"phone_number": entry_schema["phone_number"]}, {
-                                 "$set": entry_schema}, upsert=True)
+                                "$set": entry_schema}, upsert=True)
 
 
     def __weak_save_phone_numbers(self, db_entries: List[DatabaseEntry]) -> Void:
-        entries: dict = [entry.schema() for entry in db_entries]
+        entries: dict = [entry.weak_schema() for entry in db_entries]
         db_table: DatabaseCollection = self._get_db_table()
         db_table.insert_many(entries)
 
