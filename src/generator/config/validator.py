@@ -17,12 +17,19 @@ _MSG_PREFIX = "[CONFIGURATION ERROR]"
 _STARTED_MSG = "Generation started..."
 
 
-def _check_max_db_chunks_records_before_shuffle() -> Void:
+def _check_shuffle() -> Void:
     if DEV_CONFIG.DISABLE_SHUFFLE:
         return
 
     if DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE <= 0:
         terminate(f"{_MSG_PREFIX} 'MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE' should be greater than 0.")
+
+    if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE - 1:
+        terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA' should be less than DB_ENTRIES_CHUNK_SIZE - 1.")
+
+    if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA < 0:
+        terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA' should be greater than or equal to 0.")
+
 
 
 def _check_db_entries_chunk_size() -> Void:
@@ -126,7 +133,7 @@ def on_build_check_targeted_country(country: str) -> Void:
 
 
 def check_config(config: dict) -> Void:
-    _check_max_db_chunks_records_before_shuffle()
+    _check_shuffle()
     _check_db_entries_chunk_size()
     _check_ndigit(config)
     _check_same_digit_threshold(config)

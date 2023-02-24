@@ -14,7 +14,8 @@ from generator.sys.error import terminate
 import generator.phone_range_limit as limit
 from generator.metaprog.types import Void
 
-from typing import Optional, List
+from typing import List
+import random
 
 
 class Generator(GeneratorBase):
@@ -36,10 +37,12 @@ class Generator(GeneratorBase):
         return phone_suffix
 
 
-    def __start_with_desk(self, value: Optional[bool] = None) -> Optional[bool]:
-        if value is None:
-            return self._start_with_desk
-        self._start_with_desk = value
+    @staticmethod
+    def __compute_db_entries_counter_max():
+        db_entries_counter_max = DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE
+        if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA != 0:
+            db_entries_counter_max -= random.randint(0, DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE_RANDOM_DELTA)
+        return db_entries_counter_max
 
 
     def __do_generate_range(self, r: range, block_len: int, magnitude: int, cur_op_code: str, country_code: str):
@@ -47,6 +50,7 @@ class Generator(GeneratorBase):
         db_entries_chunk: List[DatabaseEntry] = []
         last_iteration = r[-1]
         db_entries_counter = 0
+        db_entries_counter_max = self.__compute_db_entries_counter_max()
         db_chunks_counter = 0
 
         for current_iteration in r:
@@ -60,11 +64,12 @@ class Generator(GeneratorBase):
                 database_entry: DatabaseEntry = DatabaseEntry(cur_phone_number, country_code, cur_op_code, cur_phone_number_suffix)
                 db_entries_chunk.append(database_entry)
                 db_entries_counter += 1
-                if db_entries_counter >= DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE:
+                if db_entries_counter >= db_entries_counter_max:
                     self._database.save_phone_numbers(db_entries_chunk)
                     db_entries_chunk = []
                     db_chunks_counter += 1
                     db_entries_counter = 0
+                    db_entries_counter_max = self.__compute_db_entries_counter_max()
                     if not DEV_CONFIG.DISABLE_SHUFFLE and db_chunks_counter >= DEV_CONFIG.MAX_DB_CHUNKS_RECORDS_BEFORE_SHUFFLE:
                         break
 
