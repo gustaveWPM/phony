@@ -13,12 +13,9 @@ from generator.metaprog.types import Void
 
 
 from typing import List
-import time
 
 
 _MSG_PREFIX = "[CONFIGURATION ERROR]"
-_YOU_SHOULDNT_HAVE_DONE_THAT = "You shouldn't have done that..."
-_STARTING_MSG = "Starting generator..."
 _STARTED_MSG = "Generation started..."
 
 
@@ -31,25 +28,6 @@ def _check_shuffle_feature() -> Void:
 def _check_db_entries_chunk_size() -> Void:
     if DEV_CONFIG.DB_ENTRIES_CHUNK_SIZE <= 0:
         terminate(f"{_MSG_PREFIX} 'DB_ENTRIES_CHUNK_SIZE' should be greater than 0.")
-
-
-def _check_allow_duplicates() -> Void:
-    if DEV_CONFIG.ALLOW_DUPLICATES and DEV_CONFIG.DISABLE_SMART_RELOAD:
-        if not DEV_CONFIG.UNSAFE:
-            terminate(f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True. This is only allowed in the UNSAFE mode.")
-        else:
-            try:
-                msg = f"{_MSG_PREFIX} 'ALLOW_DUPLICATES' and 'DISABLE_SMART_RELOAD' are both setted to True."
-                response: ConfirmChoice = choice_prompt(msg, ConfirmChoice, ConfirmChoice.REJECT, autoconfirm_key="CONFIGURATION_ERROR")
-                if response == ConfirmChoice.REJECT:
-                    terminate()
-                else:
-                    print(_YOU_SHOULDNT_HAVE_DONE_THAT)
-                    time.sleep(3)
-                    print(_STARTING_MSG)
-                    time.sleep(2)
-            except EOFError:
-                terminate()
 
 
 def _check_op_code_respects_same_digit_rule(config: dict, op_code: str) -> bool:
@@ -150,7 +128,6 @@ def on_build_check_targeted_country(country: str) -> Void:
 def check_config(config: dict) -> Void:
     _check_shuffle_feature()
     _check_db_entries_chunk_size()
-    _check_allow_duplicates()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
     _check_head_max_zeros(config)

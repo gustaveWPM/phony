@@ -96,7 +96,7 @@ class Generator(GeneratorBase):
         return r
 
 
-    def __do_generate_loop(self, country_code: str, op_codes: List[str], metadatas: Optional[dict]):
+    def __do_generate_loop(self, country_code: str, op_codes: List[str]):
         for cur_op_code in op_codes:
             if self._is_banned_op_code(cur_op_code):
                 if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
@@ -113,17 +113,17 @@ class Generator(GeneratorBase):
             block_len: int = limit.compute_range_len(cur_op_code)
             magnitude: int = 10 ** (block_len - 1)
             range_end: int = limit.compute_range_end(cur_op_code)
-            range_start: int = limit.compute_range_start(metadatas, cur_op_code, magnitude)
+            range_start: int = limit.compute_range_start(reload_metas, cur_op_code, magnitude)
             r = self.__sanitized_range(range_start, range_end)
             self.__do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
 
 
-    def __do_generate(self, prefix_data: PrefixData, metadatas: dict) -> Void:
+    def __do_generate(self, prefix_data: PrefixData) -> Void:
         country_code: str = prefix_data.country_code()
         op_codes_a, op_codes_b = self._decks._deck_a, self._decks._deck_b
 
-        self.__do_generate_loop(country_code, op_codes_a, metadatas)
-        self.__do_generate_loop(country_code, op_codes_b, metadatas)
+        self.__do_generate_loop(country_code, op_codes_a)
+        self.__do_generate_loop(country_code, op_codes_b)
 
 
     def process(self) -> Void:
@@ -133,7 +133,7 @@ class Generator(GeneratorBase):
         if self._skip_whole_generation(reload_metas):
             terminate(DEBUG_VOCAB["WARNING_MSG"]["ALREADY_REACHED_FINAL_EXIT_POINT"], 0)
 
-        self.__do_generate(prefix_data, reload_metas)
+        self.__do_generate(prefix_data)
         self._database.append_finite_collection_indicator()
         if DEV_CONFIG.DEBUG_MODE:
             print(DEBUG_VOCAB["SUCCESS_MSG"]["REACHED_FINAL_EXIT_POINT"])

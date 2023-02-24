@@ -22,7 +22,7 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
     last_block_head_max_zeros = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
     block_len: int = compute_range_len(cur_op_code)
 
-    if metadatas is not None and not DEV_CONFIG.DISABLE_SMART_RELOAD:
+    if metadatas is not None:
         range_start = int(metadatas["phone_number_suffix"]) + 1
         return range_start
 
