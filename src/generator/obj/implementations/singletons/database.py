@@ -7,7 +7,6 @@ from generator.config.rules.dev.database import DB as DATABASE_CONFIG
 from generator.debug.logger import debug_logger
 from generator.config.builders.database import append_dynamic_conf as build_config
 from generator.obj.implementations.database_entry import DatabaseEntry
-from generator.obj.implementations.metadatas import Metadatas
 from generator.metaprog.singleton import Singleton
 from generator.metaprog.types import Void
 
@@ -46,7 +45,7 @@ class Database(metaclass=Singleton):
 
 
     @staticmethod
-    def is_finite_op_code_collection(data: dict) -> bool:
+    def is_finite_op_code_range(data: dict) -> bool:
         for key in data:
             if data[key] == "-1":
                 return True
@@ -75,6 +74,15 @@ class Database(metaclass=Singleton):
             return None
 
 
+    def _retrieve_op_code_range_finite_indicator(self, op_code: str) -> Optional[dict]:
+        db_table: DatabaseCollection = self._get_db_table()
+        try:
+            d: dict = db_table.find_one({"operator_code": op_code, "phone_number": "-1"})
+            return d
+        except:
+            return None
+
+
     def __save_phone_number(*args) -> Void:
         self_instance, database_entry = args
         db_table: DatabaseCollection = self_instance._get_db_table()
@@ -93,11 +101,11 @@ class Database(metaclass=Singleton):
         db_table.insert_many(entries)
 
 
-    def save_phone_numbers(self, entries: List[DatabaseEntry]) -> Void:
+    def save_phone_numbers(self, entries: List[DatabaseEntry], force_disable_multithreading = False) -> Void:
         if DEV_CONFIG.ALLOW_DUPLICATES:
             self.__weak_save_phone_numbers(entries)
 
-        elif DEV_CONFIG.DISABLE_MULTITHREADING:
+        elif DEV_CONFIG.DISABLE_MULTITHREADING or force_disable_multithreading:
             for database_entry in entries:
                 self.__save_phone_number(database_entry)
 
@@ -113,11 +121,7 @@ class Database(metaclass=Singleton):
         entry: Optional[dict] = self._retrieve_last_saved_phone_number_entry()
         if entry is None:
             return None
-        suffix = entry["generated_suffix"]
-        country_code = entry["country_code"]
-        operator_code = entry["operator_code"]
-        metadatas = Metadatas(suffix, country_code, operator_code)
-        return metadatas.schema()
+        return entry
 
 
     def append_finite_collection_indicator(self) -> Void:

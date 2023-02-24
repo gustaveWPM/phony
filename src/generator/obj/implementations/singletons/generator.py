@@ -22,7 +22,7 @@ class Generator(GeneratorBase):
         super().__init__()
         if DEV_CONFIG.FORCED_OPERATOR_CODES and DEV_CONFIG.UNSAFE:
             self._prefix_data.force_operator_codes(DEV_CONFIG.FORCED_OPERATOR_CODES)
-        self._decks = Decks(self._prefix_data, self._start_with_desk)
+        self._decks = Decks(self._prefix_data, self._database, self._start_with_desk)
 
 
     @staticmethod
@@ -68,8 +68,10 @@ class Generator(GeneratorBase):
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
 
             if current_iteration == last_iteration:
-                if db_entries_counter > 0:
+                if db_entries_counter > 1:
                     self._database.save_phone_numbers(db_entries_chunk)
+                elif db_entries_counter == 1:
+                    self._database.save_phone_numbers(db_entries_chunk, force_disable_multithreading=True)
                 self._database.append_finite_op_code_range_indicator(cur_op_code)
 
 
@@ -92,34 +94,17 @@ class Generator(GeneratorBase):
         return r
 
 
-    def __do_generate_loop(self, country_code: str, op_codes: List[str]):
-        for cur_op_code in op_codes:
-            if self._is_banned_op_code(cur_op_code):
-                if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_REJECTED_OPERATOR_CODES:
-                    debug_logger("REJECTED_OPERATOR_CODE", cur_op_code)
-                continue
-
-            reload_metas: dict = self._database._retrieve_last_phone_number_entry_with_op_code(cur_op_code)
-            if self._skip_op_code_range_generation(reload_metas):
-                if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_SKIPPED_OPERATOR_CODES:
-                    debug_logger("SKIPPED_OPERATOR_CODE", cur_op_code)
-                continue
-
-
-            block_len: int = limit.compute_range_len(cur_op_code)
-            magnitude: int = 10 ** (block_len - 1)
-            range_end: int = limit.compute_range_end(cur_op_code)
-            range_start: int = limit.compute_range_start(reload_metas, cur_op_code, magnitude)
-            r = self.__sanitized_range(range_start, range_end)
-            self.__do_generate_range(r, block_len, magnitude, cur_op_code, country_code)
-
-
     def __do_generate(self, prefix_data: PrefixData) -> Void:
         country_code: str = prefix_data.country_code()
-        op_codes_a, op_codes_b = self._decks._deck_a, self._decks._deck_b
-
-        self.__do_generate_loop(country_code, op_codes_a)
-        self.__do_generate_loop(country_code, op_codes_b)
+        picked_op_code, metadatas = self._decks.pick_in_deck()
+        while picked_op_code:
+            block_len: int = limit.compute_range_len(picked_op_code)
+            magnitude: int = 10 ** (block_len - 1)
+            range_end: int = limit.compute_range_end(picked_op_code)
+            range_start: int = limit.compute_range_start(metadatas, picked_op_code, magnitude)
+            r = self.__sanitized_range(range_start, range_end)
+            self.__do_generate_range(r, block_len, magnitude, picked_op_code, country_code)
+            picked_op_code, metadatas = self._decks.pick_in_deck()
 
 
     def process(self) -> Void:

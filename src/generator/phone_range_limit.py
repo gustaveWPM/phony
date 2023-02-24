@@ -23,7 +23,7 @@ def compute_range_start(metadatas: Optional[dict], cur_op_code: str, magnitude: 
     block_len: int = compute_range_len(cur_op_code)
 
     if metadatas is not None:
-        range_start = int(metadatas["phone_number_suffix"]) + 1
+        range_start = int(metadatas["generated_suffix"]) + 1
         return range_start
 
     if last_block_head_max_zeros >= block_len:
@@ -51,7 +51,7 @@ def _do_compute_range_end_tail(
 
     trail_elements: List[int] = [8]
     trail_len -= 1
-    while (trail_len > 0):
+    while trail_len > 0:
         current_digit_in_trail_occurrences = trail_elements.count(current_digit);
         current_digit_in_head_occurrences = head.count(str(current_digit))
         total_cur_digit = current_digit_in_trail_occurrences + current_digit_in_head_occurrences
