@@ -46,9 +46,8 @@ class Database(metaclass=Singleton):
 
     @staticmethod
     def is_finite_op_code_range(data: dict) -> bool:
-        for key in data:
-            if data[key] == "-1":
-                return True
+        if data["phone_number"] == -1:
+            return True
         return False
 
 
