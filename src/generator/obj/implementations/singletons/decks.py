@@ -19,20 +19,38 @@ class Decks(metaclass=Singleton):
         self._deck_a: List[str] = []
         self._deck_b: List[str] = []
         self.__banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
-        self.__build_decks(prefix_data, start_with_desk)
         self.__disable_shuffle = DEV_CONFIG.DISABLE_SHUFFLE
         self.__database = db
+        self.__build_decks(prefix_data, start_with_desk)
 
 
-    def __eject_redundant_cards(self):
-        for card_label_a in self._deck_a:
-            for card_label_b in self._deck_a:
+    def __do_eject_duplicates(self, collection):
+        roll_again = False
+        for card_label_a in collection:
+            for card_label_b in collection:
+                if card_label_a == card_label_b:
+                    continue
                 if card_label_b.startswith(card_label_a):
-                    self._deck_a.remove(card_label_b)
-        for card_label_a in self._deck_b:
-            for card_label_b in self._deck_b:
-                if card_label_b.startswith(card_label_a):
-                    self._deck_b.remove(card_label_b)
+                    if DEBUGGER_CONFIG.PRINT_DUPLICATES_KILLER_LOGS:
+                        debug_logger("KEPT_OPERATOR_CODE", card_label_a)
+                        debug_logger("REMOVED_OPERATOR_CODE", card_label_b)
+                    collection.remove(card_label_b)
+                    roll_again = True
+                    break
+                if card_label_a.startswith(card_label_b):
+                    if DEBUGGER_CONFIG.PRINT_DUPLICATES_KILLER_LOGS:
+                        debug_logger("KEPT_OPERATOR_CODE", card_label_b)
+                        debug_logger("REMOVED_OPERATOR_CODE", card_label_a)
+                    collection.remove(card_label_a)
+                    roll_again = True
+                    break
+        if roll_again:
+            self.__do_eject_duplicates(collection)
+
+
+    def __eject_duplicates(self):
+        self.__do_eject_duplicates(self._deck_a)
+        self.__do_eject_duplicates(self._deck_b)
 
 
     def __eject_banned_cards(self):
@@ -53,7 +71,7 @@ class Decks(metaclass=Singleton):
             self._deck_a = prefix_data.operator_mobile_codes()
             self._deck_b = prefix_data.operator_desk_codes()
         self.__eject_banned_cards()
-        self.__eject_redundant_cards()
+        self.__eject_duplicates()
 
 
     def __do_random_pick(self, collection: List[str]) -> int:

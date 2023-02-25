@@ -12,8 +12,9 @@ FINE_TUNING = {
     "LAST_BLOCK_HEAD_MAX_ZEROS": 2,
     # * ... All phone numbers starting with those codes will be rejected. Set it to `{""}` to disable this feature.
     "BANNED_OPERATOR_CODES": {
-        "600",
+        "600", "669",
 
+        "74", "75", "76", "77", "78", "751",
         "700", "710", "711", "712", "713", "714", "715", "716", "717", "718",
         "719", "720", "721", "722", "723", "724", "725", "726", "727", "728",
         "729", "730", "731", "732", "733", "734", "735", "736", "737", "738",
