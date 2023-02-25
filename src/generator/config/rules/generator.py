@@ -5,11 +5,11 @@ from generator.metaprog.types import Schema
 
 
 GENERATOR = Schema({
-    "START_WITH_DESK_OPERATOR_CODES": False,
+    "START_WITH_LANDLINE_OPERATOR_CODES": False,
     "TARGET": {
         "COUNTRY": "FRANCE",
         "OPTIONS": {
-            "DESK": False,
+            "LANDLINE": False,
             "MOBILE": True
         }
     },

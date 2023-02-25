@@ -23,7 +23,7 @@ class Generator(GeneratorBase):
         super().__init__()
         if DEV_CONFIG.FORCED_OPERATOR_CODES and DEV_CONFIG.UNSAFE:
             self._prefix_data.force_operator_codes(DEV_CONFIG.FORCED_OPERATOR_CODES)
-        self._decks = Decks(self._prefix_data, self._database, self._start_with_desk)
+        self._decks = Decks(self._prefix_data, self._database, self._start_with_landline)
 
 
     @staticmethod

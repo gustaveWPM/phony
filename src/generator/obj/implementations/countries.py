@@ -17,8 +17,8 @@ def get_country_mobile_operator_codes(targeted_country_key: str) -> List[str]:
     return COUNTRIES[targeted_country_key]["OPERATOR_CODES"]["MOBILE"]
 
 
-def get_country_desk_operator_codes(targeted_country_key: str) -> List[str]:
-    return COUNTRIES[targeted_country_key]["OPERATOR_CODES"]["DESK"]
+def get_country_landline_operator_codes(targeted_country_key: str) -> List[str]:
+    return COUNTRIES[targeted_country_key]["OPERATOR_CODES"]["LANDLINE"]
 
 
 def get_country_code(targeted_country_key: str) -> str:

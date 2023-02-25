@@ -9,21 +9,21 @@ from typing import List
 class PrefixDataSchema():
     def __init__(self,
         country_code: str,
-        operator_desk_codes: List[str],
+        operator_landline_codes: List[str],
         operator_mobile_codes: List[str]
     ):
-        self._schema = self.__build_schema(country_code, operator_desk_codes, operator_mobile_codes)
+        self._schema = self.__build_schema(country_code, operator_landline_codes, operator_mobile_codes)
 
 
     def __build_schema(self,
         country_code,
-        operator_desk_codes,
+        operator_landline_codes,
         operator_mobile_codes
     ) -> Schema:
         return Schema({
             "country_code": country_code,
             "operator_codes": {
-                "desk": operator_desk_codes,
+                "landline": operator_landline_codes,
                 "mobile": operator_mobile_codes
             }
         })

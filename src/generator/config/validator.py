@@ -66,7 +66,7 @@ def __do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
 def _check_op_codes(config: dict) -> Void:
     prefix_data: PrefixData = GENERATOR_CONFIG["PREFIX_DATA"]
 
-    op_codes_a: List[str] = prefix_data.operator_desk_codes()
+    op_codes_a: List[str] = prefix_data.operator_landline_codes()
     op_codes_b: List[str] = prefix_data.operator_mobile_codes()
 
     make_crash = False
@@ -112,19 +112,19 @@ def _check_consecutive_same_digit_threshold(config: dict) -> Void:
 
 
 def on_build_check_target_options(options: dict) -> Void:
-    start_with_desk: bool = GENERATOR_CONFIG["START_WITH_DESK_OPERATOR_CODES"]
-    start_with_mobile: bool = GENERATOR_CONFIG["START_WITH_DESK_OPERATOR_CODES"] == False
-    target_option_desk: bool = options["DESK"]
+    start_with_landline: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATOR_CODES"]
+    start_with_mobile: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATOR_CODES"] == False
+    target_option_landline: bool = options["LANDLINE"]
     target_option_mobile: bool = options["MOBILE"]
 
-    if not target_option_desk and not target_option_mobile:
-        terminate(f"{_MSG_PREFIX} Target options 'DESK' and 'MOBILE' are both setted to False.")
+    if not target_option_landline and not target_option_mobile:
+        terminate(f"{_MSG_PREFIX} Target options 'LANDLINE' and 'MOBILE' are both setted to False.")
 
-    if not target_option_desk and start_with_desk:
-        terminate(f"{_MSG_PREFIX} Target option 'DESK' setted to False, but 'START_WITH_DESK_OPERATOR_CODES' setted to True.")
+    if not target_option_landline and start_with_landline:
+        terminate(f"{_MSG_PREFIX} Target option 'LANDLINE' setted to False, but 'START_WITH_LANDLINE_OPERATOR_CODES' setted to True.")
 
     if not target_option_mobile and start_with_mobile:
-        terminate(f"{_MSG_PREFIX} Target option 'MOBILE' and 'START_WITH_DESK_OPERATOR_CODES' are both setted to False.")
+        terminate(f"{_MSG_PREFIX} Target option 'MOBILE' and 'START_WITH_LANDLINE_OPERATOR_CODES' are both setted to False.")
 
 
 def on_build_check_targeted_country(country: str) -> Void:

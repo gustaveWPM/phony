@@ -9,7 +9,7 @@ OPERATORS_CODES = {
         "999"
     ]),
 
-    "DESK": uniq(
+    "LANDLINE": uniq(
         ["1", "2", "3", "4", "5"]
     )
 }

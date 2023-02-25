@@ -22,17 +22,17 @@ def _append_fine_tuning_attributes(conf: dict, target: dict) -> Void:
 def _do_generate_prefix_data(country: str, options: dict) -> PrefixData:
     on_build_check_target_options(options)
 
-    operator_desk_codes: List[str] = []
+    operator_landline_codes: List[str] = []
     operator_mobile_codes: List[str] = []
 
     country_code: str = countries_service.get_country_code(country)
 
-    if options["DESK"]:
-        operator_desk_codes = countries_service.get_country_desk_operator_codes(country)
+    if options["LANDLINE"]:
+        operator_landline_codes = countries_service.get_country_landline_operator_codes(country)
     if options["MOBILE"]:
         operator_mobile_codes = countries_service.get_country_mobile_operator_codes(country)
 
-    prefix_data = PrefixData(country_code, operator_desk_codes, operator_mobile_codes)
+    prefix_data = PrefixData(country_code, operator_landline_codes, operator_mobile_codes)
     return prefix_data
 
 

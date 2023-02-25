@@ -16,13 +16,13 @@ from typing import List, Optional, Tuple
 
 
 class Decks(metaclass=Singleton):
-    def __init__(self, prefix_data: PrefixData, db: Database, start_with_desk: bool):
+    def __init__(self, prefix_data: PrefixData, db: Database, start_with_landline: bool):
         self.__deck_a: List[str] = []
         self.__deck_b: List[str] = []
         self.__banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
         self.__disable_shuffle = DEV_CONFIG.DISABLE_SHUFFLE
         self.__database = db
-        self.__build_decks(prefix_data, start_with_desk)
+        self.__build_decks(prefix_data, start_with_landline)
 
 
     def __do_eject_duplicates(self, collection) -> Void:
@@ -63,13 +63,13 @@ class Decks(metaclass=Singleton):
                     self.__deck_b.remove(card_label)
 
 
-    def __build_decks(self, prefix_data: PrefixData, start_with_desk: bool) -> Void:
-        if start_with_desk:
-            self.__deck_a = prefix_data.operator_desk_codes()
+    def __build_decks(self, prefix_data: PrefixData, start_with_landline: bool) -> Void:
+        if start_with_landline:
+            self.__deck_a = prefix_data.operator_landline_codes()
             self.__deck_b = prefix_data.operator_mobile_codes()
         else:
             self.__deck_a = prefix_data.operator_mobile_codes()
-            self.__deck_b = prefix_data.operator_desk_codes()
+            self.__deck_b = prefix_data.operator_landline_codes()
         self.__eject_banned_cards()
         self.__eject_duplicates()
 
