@@ -53,9 +53,9 @@ def __do_check_op_codes(config: dict, op_codes: List[str]) -> bool:
     for cur_op_code in op_codes:
         ndigits: int = config["NDIGITS"]
         block_len: int = ndigits - len(cur_op_code)
-        if block_len < 0:
+        if block_len < 1:
             has_failed = True
-            print_on_stderr(f"{_MSG_PREFIX} Found a bigger operator code than NDIGITS: {cur_op_code}")
+            print_on_stderr(f"{_MSG_PREFIX} Found a bigger operator code than NDIGITS - 1: {cur_op_code}")
         respect_same_digit_rule = __check_op_code_respects_same_digit_rule(config, cur_op_code)
         if not respect_same_digit_rule:
             has_failed = True

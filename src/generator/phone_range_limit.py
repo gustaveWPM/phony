@@ -83,8 +83,8 @@ def _do_compute_consecutive_nines_at_op_code_tail(op_code: str) -> int:
     return consecutive_nines_at_op_code_tail
 
 
-def _do_compute_range_end(op_code: str, block_len: int) -> int:
-    range_end = 0
+def compute_range_end(op_code: str) -> int:
+    block_len: int = compute_range_len(op_code)
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
@@ -94,17 +94,7 @@ def _do_compute_range_end(op_code: str, block_len: int) -> int:
     trail_len = block_len - len(head_appended_nines)
 
     if trail_len > 0:
-        range_end = _do_compute_range_end_tail(trail_len, head, head_appended_nines, same_digit_threshold)
-    return range_end
-
-
-def compute_range_end(op_code: str) -> int:
-    range_end = 0
-    block_len: int = compute_range_len(op_code)
-
-    if block_len == 0:
-        range_end = int(op_code) + 1
-        return range_end
-
-    range_end = _do_compute_range_end(op_code, block_len)
+        range_end: int = _do_compute_range_end_tail(trail_len, head, head_appended_nines, same_digit_threshold)
+    else:
+        range_end = int(head_appended_nines)
     return range_end
