@@ -8,6 +8,7 @@ import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 from generator.debug.logger import debug_logger
+from generator.metaprog.types import Void
 
 
 import random
@@ -24,36 +25,35 @@ class Decks(metaclass=Singleton):
         self.__build_decks(prefix_data, start_with_desk)
 
 
-    def __do_eject_duplicates(self, collection):
+    def __do_eject_duplicates(self, collection) -> Void:
         roll_again = False
         for card_label_a in collection:
             for card_label_b in collection:
                 if card_label_a == card_label_b:
                     continue
-                if card_label_b.startswith(card_label_a):
-                    if DEBUGGER_CONFIG.PRINT_DUPLICATES_KILLER_LOGS:
-                        debug_logger("KEPT_OPERATOR_CODE", card_label_a)
-                        debug_logger("REMOVED_OPERATOR_CODE", card_label_b)
-                    collection.remove(card_label_b)
-                    roll_again = True
-                    break
                 if card_label_a.startswith(card_label_b):
                     if DEBUGGER_CONFIG.PRINT_DUPLICATES_KILLER_LOGS:
                         debug_logger("KEPT_OPERATOR_CODE", card_label_b)
                         debug_logger("REMOVED_OPERATOR_CODE", card_label_a)
                     collection.remove(card_label_a)
+                elif card_label_b.startswith(card_label_a):
+                    if DEBUGGER_CONFIG.PRINT_DUPLICATES_KILLER_LOGS:
+                        debug_logger("KEPT_OPERATOR_CODE", card_label_a)
+                        debug_logger("REMOVED_OPERATOR_CODE", card_label_b)
+                    collection.remove(card_label_b)
                     roll_again = True
-                    break
+            if roll_again:
+                break
         if roll_again:
             self.__do_eject_duplicates(collection)
 
 
-    def __eject_duplicates(self):
+    def __eject_duplicates(self) -> Void:
         self.__do_eject_duplicates(self._deck_a)
         self.__do_eject_duplicates(self._deck_b)
 
 
-    def __eject_banned_cards(self):
+    def __eject_banned_cards(self) -> Void:
         for banned_code in self.__banned_op_codes:
             for card_label in self._deck_a:
                 if card_label.startswith(banned_code):
@@ -63,7 +63,7 @@ class Decks(metaclass=Singleton):
                     self._deck_b.remove(card_label)
 
 
-    def __build_decks(self, prefix_data: PrefixData, start_with_desk: bool):
+    def __build_decks(self, prefix_data: PrefixData, start_with_desk: bool) -> Void:
         if start_with_desk:
             self._deck_a = prefix_data.operator_desk_codes()
             self._deck_b = prefix_data.operator_mobile_codes()
@@ -80,7 +80,7 @@ class Decks(metaclass=Singleton):
         return random.choice(collection)
 
 
-    def __eject_card(self, card_label: str):
+    def __eject_card(self, card_label: str) -> Void:
         if card_label in self._deck_a:
             self._deck_a.remove(card_label)
         else:
