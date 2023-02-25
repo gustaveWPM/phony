@@ -77,7 +77,7 @@ class Database(metaclass=Singleton):
     def _retrieve_op_code_range_finite_indicator(self, op_code: str) -> Optional[dict]:
         db_table: DatabaseCollection = self._get_db_table()
         try:
-            d: dict = db_table.find_one({"operator_code": op_code, "phone_number": "-1"})
+            d: dict = db_table.find_one({"operator_code": op_code, "phone_number": -1})
             return d
         except:
             return None
