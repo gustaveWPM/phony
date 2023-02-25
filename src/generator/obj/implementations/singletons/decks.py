@@ -24,6 +24,17 @@ class Decks(metaclass=Singleton):
         self.__database = db
 
 
+    def __eject_redundant_cards(self):
+        for card_label_a in self.deck_a:
+            for card_label_b in self.deck_a:
+                if card_label_b.startswith(card_label_a):
+                    self._deck_a.remove(card_label_b)
+        for card_label_a in self.deck_b:
+            for card_label_b in self.deck_b:
+                if card_label_b.startswith(card_label_a):
+                    self._deck_b.remove(card_label_b)
+
+
     def __eject_banned_cards(self):
         for banned_code in self.__banned_op_codes:
             for card_label in self._deck_a:
@@ -42,6 +53,7 @@ class Decks(metaclass=Singleton):
             self._deck_a = prefix_data.operator_mobile_codes()
             self._deck_b = prefix_data.operator_desk_codes()
         self.__eject_banned_cards()
+        self.__eject_redundant_cards()
 
 
     def __do_random_pick(self, collection: List[str]) -> int:
