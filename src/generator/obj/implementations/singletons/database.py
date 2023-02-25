@@ -22,6 +22,7 @@ class Database(metaclass=Singleton):
         def index_database(self) -> Void:
             db_table: DatabaseCollection = self._get_db_table()
             db_table.create_index([ ("phone_number", pymongo.ASCENDING) ])
+            db_table.create_index([ ("operator_code", pymongo.ASCENDING) ])
 
 
         def initialize(self) -> Void:
