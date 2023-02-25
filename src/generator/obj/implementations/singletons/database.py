@@ -102,6 +102,9 @@ class Database(metaclass=Singleton):
 
 
     def save_phone_numbers(self, entries: List[DatabaseEntry], force_disable_multithreading = False) -> Void:
+        if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_UPDATING_DB:
+            debug_logger("UPDATING_DATABASE")
+
         if DEV_CONFIG.ALLOW_DUPLICATES:
             self.__weak_save_phone_numbers(entries)
 
