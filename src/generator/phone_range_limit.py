@@ -88,8 +88,10 @@ def compute_range_end(op_code: str) -> int:
     same_digit_threshold: int = GENERATOR_CONFIG["SAME_DIGIT_THRESHOLD"]
     same_consecutive_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
 
+    nines_count = op_code.count('9')
     consecutive_nines_at_op_code_tail: int = _do_compute_consecutive_nines_at_op_code_tail(op_code)
-    head_appended_nines = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail)
+    nines_delta = nines_count - consecutive_nines_at_op_code_tail
+    head_appended_nines = '9' * (same_consecutive_digit_threshold - consecutive_nines_at_op_code_tail - nines_delta)
     head = op_code + head_appended_nines
     trail_len = block_len - len(head_appended_nines)
 
