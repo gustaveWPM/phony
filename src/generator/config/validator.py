@@ -17,6 +17,11 @@ _MSG_PREFIX = "[CONFIGURATION ERROR]"
 _STARTED_MSG = "Generation started..."
 
 
+def _check_max_consecutive_zeros(config: dict) -> Void:
+    if config["NDIGITS"] < config["MAX_CONSECUTIVE_ZEROS"]:
+        terminate(f"{_MSG_PREFIX} Invalid configuration: NDIGITS should be greater than or equal to MAX_CONSECUTIVE_ZEROS.")
+
+
 def _check_shuffle() -> Void:
     if DEV_CONFIG.DISABLE_SHUFFLE:
         return
@@ -137,6 +142,7 @@ def check_config(config: dict) -> Void:
     _check_db_entries_chunk_size()
     _check_ndigit(config)
     _check_same_digit_threshold(config)
+    _check_max_consecutive_zeros(config)
     _check_head_max_zeros(config)
     _check_consecutive_same_digit_threshold(config)
     _check_op_codes(config)
