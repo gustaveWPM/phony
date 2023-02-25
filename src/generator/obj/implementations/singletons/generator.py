@@ -78,10 +78,8 @@ class Generator(GeneratorBase):
                 debug_logger("REJECTED_PHONE_NUMBER", cur_phone_number)
 
             if current_iteration == last_iteration:
-                if db_entries_counter > 1:
+                if db_entries_counter > 0:
                     self._database.save_phone_numbers(db_entries_chunk)
-                elif db_entries_counter == 1:
-                    self._database.save_phone_numbers(db_entries_chunk, force_disable_multithreading=True)
                 self._database.append_finite_op_code_range_indicator(cur_op_code)
 
 
