@@ -19,10 +19,10 @@ class DatabaseEntrySchema():
         country_code: str,
         operator_code: str,
         generated_suffix: str
-    ) -> Schema:
-        return Schema({
+    ) -> dict:
+        return {
             "phone_number": int(phone_number),
             "country_code": country_code,
             "operator_code": operator_code,
             "generated_suffix": generated_suffix
-        })
+        }

@@ -17,8 +17,8 @@ from typing import List, Optional, Tuple
 
 class Decks(metaclass=Singleton):
     def __init__(self, prefix_data: PrefixData, db: Database, start_with_desk: bool):
-        self._deck_a: List[str] = []
-        self._deck_b: List[str] = []
+        self.__deck_a: List[str] = []
+        self.__deck_b: List[str] = []
         self.__banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
         self.__disable_shuffle = DEV_CONFIG.DISABLE_SHUFFLE
         self.__database = db
@@ -49,27 +49,27 @@ class Decks(metaclass=Singleton):
 
 
     def __eject_duplicates(self) -> Void:
-        self.__do_eject_duplicates(self._deck_a)
-        self.__do_eject_duplicates(self._deck_b)
+        self.__do_eject_duplicates(self.__deck_a)
+        self.__do_eject_duplicates(self.__deck_b)
 
 
     def __eject_banned_cards(self) -> Void:
         for banned_code in self.__banned_op_codes:
-            for card_label in self._deck_a:
+            for card_label in self.__deck_a:
                 if card_label.startswith(banned_code):
-                    self._deck_a.remove(card_label)
-            for card_label in self._deck_b:
+                    self.__deck_a.remove(card_label)
+            for card_label in self.__deck_b:
                 if card_label.startswith(banned_code):
-                    self._deck_b.remove(card_label)
+                    self.__deck_b.remove(card_label)
 
 
     def __build_decks(self, prefix_data: PrefixData, start_with_desk: bool) -> Void:
         if start_with_desk:
-            self._deck_a = prefix_data.operator_desk_codes()
-            self._deck_b = prefix_data.operator_mobile_codes()
+            self.__deck_a = prefix_data.operator_desk_codes()
+            self.__deck_b = prefix_data.operator_mobile_codes()
         else:
-            self._deck_a = prefix_data.operator_mobile_codes()
-            self._deck_b = prefix_data.operator_desk_codes()
+            self.__deck_a = prefix_data.operator_mobile_codes()
+            self.__deck_b = prefix_data.operator_desk_codes()
         self.__eject_banned_cards()
         self.__eject_duplicates()
 
@@ -81,10 +81,10 @@ class Decks(metaclass=Singleton):
 
 
     def __eject_card(self, card_label: str) -> Void:
-        if card_label in self._deck_a:
-            self._deck_a.remove(card_label)
+        if card_label in self.__deck_a:
+            self.__deck_a.remove(card_label)
         else:
-            self._deck_b.remove(card_label)
+            self.__deck_b.remove(card_label)
 
 
     def __skip_op_code_range_generation(self, data: Optional[dict]) -> bool:
@@ -105,10 +105,10 @@ class Decks(metaclass=Singleton):
     def pick_in_deck(self) -> Tuple[Optional[str], dict]:
         pick_again = True
         while pick_again:
-            if self._deck_a != []:
-                operator_code_picked = self.__do_random_pick(self._deck_a)
-            elif self._deck_b != []:
-                operator_code_picked = self.__do_random_pick(self._deck_b)
+            if self.__deck_a != []:
+                operator_code_picked = self.__do_random_pick(self.__deck_a)
+            elif self.__deck_b != []:
+                operator_code_picked = self.__do_random_pick(self.__deck_b)
             else:
                 return None
 

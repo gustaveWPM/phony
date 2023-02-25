@@ -85,12 +85,12 @@ class Database(metaclass=Singleton):
 
     def __save_phone_number(self, database_entry: DatabaseEntry) -> Void:
         db_table: DatabaseCollection = self._get_db_table()
-        entry_schema: dict = database_entry.weak_schema()
+        entry_schema: dict = database_entry.schema()
         db_table.insert_one(entry_schema)
 
 
     def __save_chunk(self, db_entries: List[DatabaseEntry]) -> Void:
-        entries = [entry.weak_schema() for entry in db_entries]
+        entries = [entry.schema() for entry in db_entries]
         db_table: DatabaseCollection = self._get_db_table()
         db_table.insert_many(entries)
 
