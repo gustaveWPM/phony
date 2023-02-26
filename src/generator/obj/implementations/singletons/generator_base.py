@@ -2,6 +2,7 @@
 
 
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
+import generator.config.rules.dev.generator as DEV_CONFIG
 import generator.config.builders.generator as generator_config_builder
 import generator.config.validator as config_validator
 from generator.obj.implementations.prefix_data import PrefixData
@@ -29,6 +30,8 @@ class GeneratorBase(metaclass=Singleton):
 
 
     def _reject_phone_number_suffix(self, op_code: str, phone_number_suffix: str) -> bool:
+        if DEV_CONFIG.BYPASS_GENERATED_NUMBERS_VERIFICATION:
+            return False
         digits = "0123456789"
         banned_pattern = '0' * (self._last_block_head_max_zeros + 1)
         whole_phone_number: str = op_code + phone_number_suffix

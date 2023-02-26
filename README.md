@@ -6,8 +6,9 @@ Remember that it is just a side project made for the fun.
 
 ## Features
 
-- Data Persistence (MongoDB)
 - Deterministic generation (Finite generator)
+- Data Persistence (MongoDB)
+- Stateful
 - Configuration:
     - i18n configuration template
     - Country code
@@ -16,7 +17,8 @@ Remember that it is just a side project made for the fun.
         - Phone number length
         - Same digit threshold
         - Consecutive same digit threshold
-        - Max heading zeros (at the beginning of the pseudo-randomly generated block)
+        - Max consecutive zeros
+        - Max heading zeros (maximum of zeros at the beginning of the pseudo-randomly generated block)
         - Banned operator codes
     - Pseudo randomization:
         - Shuffle operator codes

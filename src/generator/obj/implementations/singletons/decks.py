@@ -26,6 +26,8 @@ class Decks(metaclass=Singleton):
 
 
     def __do_eject_duplicates(self, collection) -> Void:
+        if DEV_CONFIG.ALLOW_DUPLICATES:
+            return
         roll_again = False
         for card_label_a in collection:
             for card_label_b in collection:

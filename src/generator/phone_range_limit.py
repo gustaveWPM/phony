@@ -1,7 +1,6 @@
 # coding: utf-8
 
 
-import generator.config.rules.dev.generator as DEV_CONFIG
 from generator.config.rules.generator import GENERATOR as GENERATOR_CONFIG
 import generator.config.rules.dev.debugger as DEBUGGER_CONFIG
 from generator.config.absolute_getters.generator import get_ndigits
