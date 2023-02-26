@@ -83,7 +83,6 @@ class Generator(GeneratorBase):
                 self._database.append_finite_op_code_range_indicator(cur_op_code)
 
 
-    # * ... Fixes potential issues related to the smart reload feature, terminates if invalid unsafe params.
     @staticmethod
     def __sanitized_range(range_start: int, range_end: int) -> range:
         if range_start < 0:
