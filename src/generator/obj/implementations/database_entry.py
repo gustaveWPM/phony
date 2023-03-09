@@ -2,7 +2,6 @@
 
 
 from generator.obj.schemas.database_entry import DatabaseEntrySchema
-from generator.metaprog.types import Schema
 
 
 class DatabaseEntry(DatabaseEntrySchema):
