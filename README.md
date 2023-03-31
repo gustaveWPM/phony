@@ -33,5 +33,5 @@ Remember that it is just a side project made for the fun.
 ### Dependencies
 
 - [pymongo](https://pypi.org/project/pymongo/)
-- [Python 3.8.10](www.python.org/)
+- [Python 3.8.10](https://www.python.org/)
 - [MongoDB](https://www.mongodb.com/)
