@@ -1,25 +1,20 @@
 # coding: utf-8
 
 
-from generator.config.rules.countries import COUNTRIES
-
 from typing import List
 
 
-_COUNTRIES_LIST: List[str] = list(COUNTRIES.keys())
+def is_valid_country(conf: dict) -> bool:
+    return conf["TARGET"]["COUNTRY"] in conf["COUNTRIES"]
 
 
-def is_valid_country(targeted_country_key: str) -> bool:
-    return targeted_country_key in _COUNTRIES_LIST
+def get_country_mobile_operators_codes(conf: dict, targeted_country_key: str) -> List[str]:
+    return conf["COUNTRIES"][targeted_country_key]["OPERATORS_CODES"]["MOBILE"]
 
 
-def get_country_mobile_operator_codes(targeted_country_key: str) -> List[str]:
-    return COUNTRIES[targeted_country_key]["OPERATOR_CODES"]["MOBILE"]
+def get_country_landline_operators_codes(conf: dict, targeted_country_key: str) -> List[str]:
+    return conf["COUNTRIES"][targeted_country_key]["OPERATORS_CODES"]["LANDLINE"]
 
 
-def get_country_landline_operator_codes(targeted_country_key: str) -> List[str]:
-    return COUNTRIES[targeted_country_key]["OPERATOR_CODES"]["LANDLINE"]
-
-
-def get_country_code(targeted_country_key: str) -> str:
-    return COUNTRIES[targeted_country_key]["COUNTRY_CODE"]
+def get_country_code(conf: dict, targeted_country_key: str) -> str:
+    return conf["COUNTRIES"][targeted_country_key]["COUNTRY_CODE"]

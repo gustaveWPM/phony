@@ -23,16 +23,16 @@ class PrefixData(PrefixDataSchema):
 
     def operator_mobile_codes(self, value: Optional[List[str]] = None) -> Optional[List[str]]:
         if value is None:
-            return self._schema["operator_codes"]["mobile"]
-        self._schema["operator_codes"]["mobile"] = value
+            return self._schema["operators_codes"]["mobile"]
+        self._schema["operators_codes"]["mobile"] = value
 
 
     def operator_landline_codes(self, value: Optional[List[str]] = None) -> Optional[List[str]]:
         if value is None:
-            return self._schema["operator_codes"]["landline"]
-        self._schema["operator_codes"]["landline"] = value
+            return self._schema["operators_codes"]["landline"]
+        self._schema["operators_codes"]["landline"] = value
 
 
-    def force_operator_codes(self, data: List[str]):
+    def force_operators_codes(self, data: List[str]):
         self.operator_landline_codes(data)
         self.operator_mobile_codes(data)

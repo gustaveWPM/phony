@@ -117,8 +117,8 @@ def _check_consecutive_same_digit_threshold(config: dict) -> Void:
 
 
 def on_build_check_target_options(options: dict) -> Void:
-    start_with_landline: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATOR_CODES"]
-    start_with_mobile: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATOR_CODES"] == False
+    start_with_landline: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATORS_CODES"]
+    start_with_mobile: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATORS_CODES"] == False
     target_option_landline: bool = options["LANDLINE"]
     target_option_mobile: bool = options["MOBILE"]
 
@@ -126,15 +126,15 @@ def on_build_check_target_options(options: dict) -> Void:
         terminate(f"{_MSG_PREFIX} Target options 'LANDLINE' and 'MOBILE' are both setted to False.")
 
     if not target_option_landline and start_with_landline:
-        terminate(f"{_MSG_PREFIX} Target option 'LANDLINE' setted to False, but 'START_WITH_LANDLINE_OPERATOR_CODES' setted to True.")
+        terminate(f"{_MSG_PREFIX} Target option 'LANDLINE' setted to False, but 'START_WITH_LANDLINE_OPERATORS_CODES' setted to True.")
 
     if not target_option_mobile and start_with_mobile:
-        terminate(f"{_MSG_PREFIX} Target option 'MOBILE' and 'START_WITH_LANDLINE_OPERATOR_CODES' are both setted to False.")
+        terminate(f"{_MSG_PREFIX} Target option 'MOBILE' and 'START_WITH_LANDLINE_OPERATORS_CODES' are both setted to False.")
 
 
-def on_build_check_targeted_country(country: str) -> Void:
-    if not countries_service.is_valid_country(country):
-        terminate(f"{_MSG_PREFIX} Unknown country key value: {country}.")
+def on_build_check_targeted_country(conf: dict) -> Void:
+    if not countries_service.is_valid_country(conf):
+        terminate(f"{_MSG_PREFIX} Unknown country key value: {conf['TARGET']['COUNTRY']}.\nKnown country keys values are: {list(conf['COUNTRIES'].keys())}")
 
 
 def check_config(config: dict) -> Void:

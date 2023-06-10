@@ -23,6 +23,6 @@ DEBUG_MODE = False                              # * ... Default value is `False`
 
 UNSAFE = False                                  # * ... Default value is `False`
 
-FORCED_OPERATOR_CODES: list = []                # * ... Default value is `[]`
+FORCED_OPERATORS_CODES: list = []                # * ... Default value is `[]`
 
 AUTOCONFIRM_PROMPTS = Schema({})                # * ... Unused feature atm

@@ -13,5 +13,5 @@ FINE_TUNING = {
     # * ... Max consecutive zeros
     "MAX_CONSECUTIVE_ZEROS": 3,
     # * ... All phone numbers starting with those codes will be rejected. Set it to `{""}` to disable this feature.
-    "BANNED_OPERATOR_CODES": {""}
+    "BANNED_OPERATORS_CODES": {""}
 }

@@ -4,8 +4,7 @@
 PRINT_GENERATED_PHONE_NUMBERS = True      # * ... Default value is `True`
 PRINT_UPDATING_DB = True                  # * ... Default value is `True`
 PRINT_REJECTED_PHONE_NUMBERS = False      # * ... Default value is `False`
-PRINT_REJECTED_OPERATOR_CODES = False     # * ... Default value is `False`
-PRINT_SKIPPED_OPERATOR_CODES = False      # * ... Default value is `False`
+PRINT_SKIPPED_OPERATORS_CODES = False     # * ... Default value is `False`
 PRINT_DB_UPDATES = False                  # * ... Default value is `False`
 PRINT_DUPLICATES_KILLER_LOGS = False      # * ... Default value is `False`
 

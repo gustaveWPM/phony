@@ -23,9 +23,9 @@ class GeneratorBase(metaclass=Singleton):
         self._consecutive_same_digit_threshold: int = GENERATOR_CONFIG["CONSECUTIVE_SAME_DIGIT_THRESHOLD"]
         self._last_block_head_max_zeros: int = GENERATOR_CONFIG["LAST_BLOCK_HEAD_MAX_ZEROS"]
         self._max_consecutive_zeros: int = GENERATOR_CONFIG["MAX_CONSECUTIVE_ZEROS"]
-        self._banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
+        self._banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATORS_CODES"]
         self._prefix_data: PrefixData = GENERATOR_CONFIG["PREFIX_DATA"]
-        self._start_with_landline: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATOR_CODES"]
+        self._start_with_landline: bool = GENERATOR_CONFIG["START_WITH_LANDLINE_OPERATORS_CODES"]
         config_validator.check_config(GENERATOR_CONFIG)
 
 

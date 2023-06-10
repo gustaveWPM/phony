@@ -22,7 +22,7 @@ class PrefixDataSchema():
     ) -> Schema:
         return Schema({
             "country_code": country_code,
-            "operator_codes": {
+            "operators_codes": {
                 "landline": operator_landline_codes,
                 "mobile": operator_mobile_codes
             }

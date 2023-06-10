@@ -21,8 +21,8 @@ import random
 class Generator(GeneratorBase):
     def __init__(self):
         super().__init__()
-        if DEV_CONFIG.FORCED_OPERATOR_CODES and DEV_CONFIG.UNSAFE:
-            self._prefix_data.force_operator_codes(DEV_CONFIG.FORCED_OPERATOR_CODES)
+        if DEV_CONFIG.FORCED_OPERATORS_CODES and DEV_CONFIG.UNSAFE:
+            self._prefix_data.force_operators_codes(DEV_CONFIG.FORCED_OPERATORS_CODES)
         self._decks = Decks(self._prefix_data, self._database, self._start_with_landline)
 
 

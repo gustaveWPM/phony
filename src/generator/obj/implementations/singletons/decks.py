@@ -19,7 +19,7 @@ class Decks(metaclass=Singleton):
     def __init__(self, prefix_data: PrefixData, db: Database, start_with_landline: bool):
         self.__deck_a: List[str] = []
         self.__deck_b: List[str] = []
-        self.__banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATOR_CODES"]
+        self.__banned_op_codes: List[str] = GENERATOR_CONFIG["BANNED_OPERATORS_CODES"]
         self.__disable_shuffle = DEV_CONFIG.DISABLE_SHUFFLE
         self.__database = db
         self.__build_decks(prefix_data, start_with_landline)
@@ -97,7 +97,7 @@ class Decks(metaclass=Singleton):
 
     def __should_pick_again(self, reject_datas: dict, operator_code_picked: str) -> bool:
         if self.__skip_op_code_range_generation(reject_datas):
-            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_SKIPPED_OPERATOR_CODES:
+            if DEV_CONFIG.DEBUG_MODE and DEBUGGER_CONFIG.PRINT_SKIPPED_OPERATORS_CODES:
                 debug_logger("SKIPPED_OPERATOR_CODE", operator_code_picked)
         else:
             return False
