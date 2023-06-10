@@ -25,11 +25,10 @@ def _append_dynamic_countries_config(conf: dict) -> Void:
         return filenames
 
     artefacts_folder_root = "generator/config/rules/artefacts"
-    artefacts_categories = ['country_code', 'fine_tuning', 'operators_codes']
+    artefacts_categories = {'country_code', 'fine_tuning', 'operators_codes'}
     artefacts_folders = [f"{artefacts_folder_root}/{category}" for category in artefacts_categories]
 
     artefacts_folders_head = artefacts_folders[0]
-    print(artefacts_folders_head)
     filenames = _get_artefacts_in_folder(artefacts_folders_head)
 
     rejected_folders = []
@@ -41,14 +40,14 @@ def _append_dynamic_countries_config(conf: dict) -> Void:
 
             if rejected_folders:
                 print_on_stderr(f"{_MSG_PREFIX} Expected this set of files in all the artefacts folders:", filenames)
-                print_on_stderr(f"But those folders mismatch this rule:")
+                print_on_stderr("But those folders mismatch this rule:")
                 for rejected_folder in rejected_folders:
-                    print_on_stderr("- " + rejected_folder)
+                    print_on_stderr(f"- {rejected_folder}")
                 terminate("\nInvalid artefacts: missing or foreign files!")
 
             countries = set()
             for filename in filenames:
-                filename_without_extension = filename.replace(".py", "")
+                filename_without_extension = os.path.splitext(filename)[0]
                 countries.add(filename_without_extension)
 
             conf["COUNTRIES"] = {}
@@ -56,7 +55,7 @@ def _append_dynamic_countries_config(conf: dict) -> Void:
                 for country in countries:
                     artefact: str = artefact_category.upper()
                     key: str = country.upper()
-                    module_path = artefacts_folder_root.replace("/", ".") + "." + artefact_category + "." + country
+                    module_path = artefacts_folder_root.replace("/", ".") + f".{artefact_category}.{country}"
                     if key not in conf["COUNTRIES"]:
                         conf["COUNTRIES"][key] = {}
                     conf["COUNTRIES"][key][artefact] = runtime_import(module_path, artefact)
