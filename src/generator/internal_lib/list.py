@@ -1,8 +1,7 @@
 # coding: utf-8
 
 
-from functools import reduce
-from typing import List, Callable
+from typing import List
 
 
 def flatten(l: list) -> list:
