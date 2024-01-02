@@ -1,8 +1,8 @@
 # coding: utf-8
 
+from typing import TypeAlias
 
-Void = None
-
+Void: TypeAlias = type(None)
 
 class Schema(dict):
     def __init__(self, *args, **kwargs):
