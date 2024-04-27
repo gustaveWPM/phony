@@ -2,7 +2,7 @@
 
 from typing import TypeAlias
 
-Void: TypeAlias = type(None)
+Void: TypeAlias = None
 
 class Schema(dict):
     def __init__(self, *args, **kwargs):
