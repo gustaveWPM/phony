@@ -8,7 +8,7 @@ Remember that it is just a side project made for the fun.
 
 - Deterministic generation (Finite generator)
 - Data Persistence (MongoDB)
-- Stateful
+- Stateless
 - Configuration:
     - i18n configuration template
     - Country code
